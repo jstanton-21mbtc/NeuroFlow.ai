@@ -1646,12 +1646,15 @@ function saveDiag(type) {
 // ════════════════════════════════════════════════
 let _voiceRecognition = null;
 let _voiceFinalText   = '';
+let _voiceInterim     = '';
 let _voiceIsRecording = false;
+let _voicePtId        = '';
+let _voiceTpl         = '';
 
 function openVoiceDictation() {
-  const ptId = document.getElementById('chart_pt')?.value || '';
-  const tpl  = document.getElementById('chart_tpl')?.value || 'General Neurology';
-  const pt   = ptId ? appData.patients.find(p => p.id === ptId) : null;
+  _voicePtId = document.getElementById('chart_pt')?.value || '';
+  _voiceTpl  = document.getElementById('chart_tpl')?.value || 'General Neurology';
+  const pt   = _voicePtId ? appData.patients.find(p => p.id === _voicePtId) : null;
 
   const bars = Array.from({length:9}, (_,i) =>
     `<span style="height:4px;--d:${(0.3+i*0.08).toFixed(2)}s"></span>`).join('');
@@ -1659,7 +1662,7 @@ function openVoiceDictation() {
   openModal('🎤 Voice Dictation', `
     <div style="font-size:13px;color:#64748B;margin-bottom:14px">
       Speak naturally about the visit. The AI will generate a complete SOAP note from your dictation.
-      ${pt ? `<div style="margin-top:6px"><strong>Patient:</strong> ${pt.name} &nbsp;|&nbsp; <strong>Template:</strong> ${tpl}</div>` : ''}
+      ${pt ? `<div style="margin-top:6px"><strong>Patient:</strong> ${pt.name} &nbsp;|&nbsp; <strong>Template:</strong> ${_voiceTpl}</div>` : ''}
     </div>
     <div class="voice-modal-center">
       <button class="mic-btn" id="voiceMicBtn" onclick="toggleRecording()">
@@ -1670,7 +1673,7 @@ function openVoiceDictation() {
     </div>
     <div class="transcript-box" id="voiceTranscript"><span style="color:#CBD5E1">Your dictation will appear here in real time...</span></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-teal" id="voiceGenerateBtn" onclick="generateNoteFromVoice('${ptId}','${tpl}')" disabled style="opacity:.5;cursor:not-allowed">✦ Generate SOAP Note</button>
+      <button class="btn btn-teal" id="voiceGenerateBtn" onclick="generateNoteFromVoice()" disabled style="opacity:.5;cursor:not-allowed">✦ Generate SOAP Note</button>
       <button class="btn btn-ghost" onclick="clearDictation()">Clear</button>
     </div>
     <div id="voice_gen_result" class="ai-box hidden" style="margin-top:14px">
@@ -1679,6 +1682,7 @@ function openVoiceDictation() {
       <button class="btn btn-teal btn-sm" style="margin-top:10px" onclick="applyVoiceNote()">Apply to Chart</button>
     </div>`);
   _voiceFinalText = '';
+  _voiceInterim   = '';
   _voiceIsRecording = false;
 }
 
@@ -1709,19 +1713,15 @@ function startRecording() {
   };
 
   _voiceRecognition.onresult = (e) => {
-    let interim = '';
+    _voiceInterim = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const t = e.results[i][0].transcript;
       if (e.results[i].isFinal) { _voiceFinalText += t + ' '; }
-      else { interim = t; }
+      else { _voiceInterim += t; }
     }
     const box = document.getElementById('voiceTranscript');
-    if (box) box.innerHTML = _escHtml(_voiceFinalText) + (interim ? `<span class="transcript-interim">${_escHtml(interim)}</span>` : '');
-    // Enable generate button once there's content
-    const btn = document.getElementById('voiceGenerateBtn');
-    if (btn && _voiceFinalText.trim().length > 10) {
-      btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
-    }
+    if (box) box.innerHTML = _escHtml(_voiceFinalText) + (_voiceInterim ? `<span class="transcript-interim">${_escHtml(_voiceInterim)}</span>` : '');
+    _enableGenerateIfReady();
   };
 
   _voiceRecognition.onerror = (e) => {
@@ -1732,6 +1732,13 @@ function startRecording() {
 
   _voiceRecognition.onend = () => {
     _voiceIsRecording = false;
+    // Flush any remaining interim text into final so nothing is lost
+    if (_voiceInterim.trim()) {
+      _voiceFinalText += _voiceInterim + ' ';
+      _voiceInterim = '';
+      const box = document.getElementById('voiceTranscript');
+      if (box) box.innerHTML = _escHtml(_voiceFinalText);
+    }
     const btn = document.getElementById('voiceMicBtn');
     const wf  = document.getElementById('voiceWaveform');
     const st  = document.getElementById('recStatus');
@@ -1741,6 +1748,7 @@ function startRecording() {
       st.textContent = 'Recording stopped. Click ✦ Generate to create your note.';
       st.classList.remove('live');
     }
+    _enableGenerateIfReady();
   };
 
   _voiceRecognition.start();
@@ -1767,11 +1775,33 @@ function _escHtml(t) {
   return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-async function generateNoteFromVoice(ptId, tpl) {
-  const key = getApiKey();
+function _enableGenerateIfReady() {
+  const btn = document.getElementById('voiceGenerateBtn');
+  if (!btn) return;
+  // Use final text OR anything visible in the transcript box
+  const box = document.getElementById('voiceTranscript');
+  const boxText = box ? box.innerText.trim() : '';
+  const hasContent = _voiceFinalText.trim().length > 0 || boxText.length > 10;
+  if (hasContent) {
+    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+  }
+}
+
+async function generateNoteFromVoice() {
+  const ptId = _voicePtId;
+  const tpl  = _voiceTpl;
+  const key  = getApiKey();
   if (!key) { alert('Enter your Anthropic API key in Settings first.'); return; }
-  const transcript = _voiceFinalText.trim();
-  if (!transcript) { alert('No dictation recorded yet.'); return; }
+
+  // Use final text; fall back to whatever is visible in the transcript box
+  let transcript = _voiceFinalText.trim();
+  if (!transcript) {
+    const box = document.getElementById('voiceTranscript');
+    transcript = box ? box.innerText.trim() : '';
+  }
+  if (!transcript || transcript === 'Your dictation will appear here in real time...') {
+    alert('No dictation recorded yet. Click the mic and speak first.'); return;
+  }
 
   // Stop recording if still active
   stopRecording();
