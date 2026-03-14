@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroFlow.ai</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#111827;color:#F9FAFB;min-height:100vh}
+/* ── LOGIN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111827}
+.login-box{background:#1F2937;border:1px solid #374151;border-radius:16px;padding:48px 40px;width:380px;text-align:center}
+.login-logo{width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.login-logo svg{width:36px;height:36px}
+.login-box h1{font-size:24px;font-weight:700;color:#F9FAFB;margin-bottom:4px}
+.login-box p{color:#9CA3AF;font-size:13px;margin-bottom:32px}
+.login-box input{width:100%;padding:12px 16px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:14px;outline:none;margin-bottom:12px}
+.login-box input:focus{border-color:#0D9488}
+.btn-primary{width:100%;padding:12px;background:#0D9488;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-primary:hover{background:#0F766E}
+.login-hint{margin-top:16px;font-size:12px;color:#6B7280}
+/* ── LAYOUT ── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:row}
+#app.visible{display:flex}
+/* SIDEBAR */
+#sidebar{width:220px;background:#1F2937;border-right:1px solid #374151;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-brand{padding:20px 16px 12px;border-bottom:1px solid #374151;display:flex;align-items:center;gap:10px}
+.brand-icon{width:36px;height:36px;background:#0D9488;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:20px;height:20px}
+.brand-name{font-size:16px;font-weight:700;color:#F9FAFB}
+.brand-sub{font-size:10px;color:#6B7280;margin-top:1px}
+.sidebar-clinic{padding:12px 16px;border-bottom:1px solid #374151}
+.sidebar-clinic-name{font-size:12px;font-weight:600;color:#0D9488}
+.sidebar-clinic-doc{font-size:11px;color:#9CA3AF}
+nav{flex:1;padding:8px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-left:3px solid transparent;color:#9CA3AF;font-size:13px;font-weight:500;transition:all .15s;user-select:none}
+.nav-item:hover{color:#F9FAFB;background:#374151}
+.nav-item.active{color:#0D9488;border-left-color:#0D9488;background:rgba(13,148,136,.08)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-bottom{padding:12px 16px;border-top:1px solid #374151}
+.sidebar-logout{display:flex;align-items:center;gap:8px;color:#6B7280;font-size:12px;cursor:pointer;padding:8px;border-radius:6px}
+.sidebar-logout:hover{color:#F9FAFB;background:#374151}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:#1F2937;border-bottom:1px solid #374151;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:18px;font-weight:700;color:#F9FAFB}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+#content{flex:1;overflow-y:auto;padding:24px}
+/* ── CARDS & GRIDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px}
+.stat-label{font-size:12px;color:#9CA3AF;margin-bottom:6px}
+.stat-value{font-size:28px;font-weight:700;color:#F9FAFB}
+.stat-sub{font-size:11px;color:#6B7280;margin-top:4px}
+.stat-card.accent .stat-value{color:#0D9488}
+.card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;color:#F9FAFB;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:background .15s}
+.btn-teal{background:#0D9488;color:#fff}.btn-teal:hover{background:#0F766E}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-ghost{background:transparent;border:1px solid #374151;color:#9CA3AF}.btn-ghost:hover{color:#F9FAFB;border-color:#6B7280}
+.btn-red{background:#DC2626;color:#fff}.btn-red:hover{background:#B91C1C}
+.btn-green{background:#059669;color:#fff}.btn-green:hover{background:#047857}
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.badge-teal{background:rgba(13,148,136,.15);color:#0D9488}
+.badge-green{background:rgba(5,150,105,.15);color:#10B981}
+.badge-yellow{background:rgba(245,158,11,.15);color:#F59E0B}
+.badge-red{background:rgba(220,38,38,.15);color:#EF4444}
+.badge-gray{background:rgba(107,114,128,.15);color:#9CA3AF}
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:#6B7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #374151}
+td{padding:10px 12px;border-bottom:1px solid #1F2937;color:#D1D5DB;vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+/* ── FORMS ── */
+.form-row{display:grid;gap:12px;margin-bottom:12px}
+.form-row-2{grid-template-columns:1fr 1fr}
+.form-row-3{grid-template-columns:1fr 1fr 1fr}
+label{display:block;font-size:12px;color:#9CA3AF;margin-bottom:4px;font-weight:500}
+input[type=text],input[type=email],input[type=date],input[type=tel],input[type=password],input[type=number],select,textarea{width:100%;padding:9px 12px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:#0D9488}
+select option{background:#1F2937}
+textarea{resize:vertical;min-height:80px}
+/* ── PATIENT LIST ── */
+.patient-list{display:flex;flex-direction:column;gap:2px}
+.patient-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.patient-row:hover{background:#374151}
+.patient-row.selected{background:rgba(13,148,136,.1);border-color:#0D9488}
+.patient-avatar{width:36px;height:36px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.patient-name{font-size:14px;font-weight:600;color:#F9FAFB}
+.patient-meta{font-size:11px;color:#9CA3AF}
+/* ── SCHEDULING ── */
+.sched-grid{display:grid;grid-template-columns:60px repeat(5,1fr);border:1px solid #374151;border-radius:10px;overflow:hidden;font-size:12px}
+.sched-header{background:#374151;padding:8px;text-align:center;font-weight:600;color:#F9FAFB;border-bottom:1px solid #4B5563}
+.sched-time{background:#1A2332;padding:6px 8px;color:#6B7280;text-align:right;border-bottom:1px solid #374151;border-right:1px solid #374151;font-size:11px}
+.sched-slot{min-height:32px;border-bottom:1px solid #1F2937;border-right:1px solid #374151;padding:2px;cursor:pointer;transition:background .1s}
+.sched-slot:hover{background:rgba(13,148,136,.08)}
+.sched-slot:last-child{border-right:none}
+.sched-appt{background:rgba(13,148,136,.2);border:1px solid #0D9488;border-radius:4px;padding:3px 6px;font-size:11px;color:#0D9488;font-weight:600;cursor:pointer}
+.sched-appt.new-pt{background:rgba(139,92,246,.2);border-color:#8B5CF6;color:#8B5CF6}
+.sched-appt.procedure{background:rgba(245,158,11,.2);border-color:#F59E0B;color:#F59E0B}
+/* ── MESSAGING ── */
+.msg-layout{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 160px);gap:0;border:1px solid #374151;border-radius:12px;overflow:hidden}
+.msg-threads{background:#1F2937;border-right:1px solid #374151;overflow-y:auto}
+.msg-thread-item{padding:14px 16px;cursor:pointer;border-bottom:1px solid #374151}
+.msg-thread-item:hover{background:#374151}
+.msg-thread-item.active{background:rgba(13,148,136,.1);border-left:3px solid #0D9488}
+.msg-thread-name{font-size:13px;font-weight:600;color:#F9FAFB}
+.msg-thread-preview{font-size:11px;color:#6B7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-unread{width:8px;height:8px;background:#0D9488;border-radius:50%;float:right;margin-top:4px}
+.msg-chat{display:flex;flex-direction:column;background:#111827}
+.msg-chat-header{padding:14px 20px;border-bottom:1px solid #374151;background:#1F2937}
+.msg-chat-title{font-size:14px;font-weight:600;color:#F9FAFB}
+.msg-chat-sub{font-size:11px;color:#9CA3AF}
+.msg-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg-bubble{max-width:70%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5}
+.msg-bubble.inbound{background:#1F2937;border:1px solid #374151;color:#D1D5DB;align-self:flex-start}
+.msg-bubble.outbound{background:#0D9488;color:#fff;align-self:flex-end}
+.msg-bubble .msg-sender{font-size:10px;font-weight:600;margin-bottom:4px;opacity:.7}
+.msg-bubble .msg-time{font-size:10px;margin-top:4px;opacity:.6;text-align:right}
+.msg-compose{padding:14px 20px;border-top:1px solid #374151;background:#1F2937;display:flex;gap:8px}
+.msg-compose textarea{flex:1;padding:10px 12px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;resize:none;height:70px;outline:none;font-family:inherit}
+.msg-compose textarea:focus{border-color:#0D9488}
+/* ── DIAGNOSTICS ── */
+.diag-tabs{display:flex;gap:2px;margin-bottom:16px;background:#374151;border-radius:8px;padding:3px}
+.diag-tab{flex:1;padding:8px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:#9CA3AF;transition:all .15s}
+.diag-tab.active{background:#0D9488;color:#fff}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center}
+.modal{background:#1F2937;border:1px solid #374151;border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;color:#F9FAFB;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{cursor:pointer;color:#6B7280;font-size:20px;line-height:1}
+.modal-close:hover{color:#F9FAFB}
+/* ── AI BOX ── */
+.ai-box{background:#111827;border:1px solid #0D9488;border-radius:10px;padding:16px;margin-top:12px}
+.ai-box-title{font-size:12px;font-weight:600;color:#0D9488;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-result{font-size:13px;color:#D1D5DB;line-height:1.6;white-space:pre-wrap}
+.ai-spinner{display:flex;align-items:center;gap:8px;color:#9CA3AF;font-size:13px}
+.spinner{width:16px;height:16px;border:2px solid #374151;border-top-color:#0D9488;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── SEARCH ── */
+.search-bar{width:100%;padding:9px 12px 9px 36px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;outline:none}
+.search-bar:focus{border-color:#0D9488}
+.search-wrap{position:relative;margin-bottom:16px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6B7280;width:14px;height:14px}
+/* ── ACTIVITY FEED ── */
+.activity-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #374151}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;background:#0D9488;border-radius:50%;margin-top:5px;flex-shrink:0}
+.activity-text{font-size:13px;color:#D1D5DB}
+.activity-time{font-size:11px;color:#6B7280;margin-top:2px}
+/* ── TODAY SCHEDULE ── */
+.appt-mini{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:#111827;border:1px solid #374151;margin-bottom:8px}
+.appt-time-mini{font-size:12px;font-weight:700;color:#0D9488;width:55px;flex-shrink:0}
+.appt-name-mini{font-size:13px;font-weight:600;color:#F9FAFB}
+.appt-type-mini{font-size:11px;color:#9CA3AF}
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.settings-card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px}
+.settings-card-title{font-size:14px;font-weight:600;color:#F9FAFB;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #374151}
+/* ── CHARTING ── */
+.soap-section{margin-bottom:16px}
+.soap-label{font-size:13px;font-weight:700;color:#0D9488;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+/* ── SPLIT LAYOUT ── */
+.split-layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
+/* ── UTILS ── */
+.text-teal{color:#0D9488}
+.text-muted{color:#6B7280}
+.text-sm{font-size:12px}
+.mt-2{margin-top:8px}
+.mt-4{margin-top:16px}
+.flex{display:flex}
+.flex-col{flex-direction:column}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.w-full{width:100%}
+.hidden{display:none!important}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="18" cy="14" rx="10" ry="8" stroke="white" stroke-width="2"/>
+        <path d="M8 14 Q10 10 12 14 Q14 18 16 14 Q18 10 20 14 Q22 18 24 14 Q26 10 28 14" stroke="white" stroke-width="1.5" fill="none"/>
+        <path d="M12 22 Q15 28 18 30 Q21 28 24 22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>NeuroFlow.ai</h1>
+    <p>Genesee Neurology Associates</p>
+    <input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    <div class="login-hint">Default password: <strong>neuro2026</strong></div>
+    <div id="loginErr" style="color:#EF4444;font-size:12px;margin-top:8px;display:none">Incorrect password</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ APP ═══════════════════ -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 20 20" fill="none">
+          <ellipse cx="10" cy="8" rx="6" ry="5" stroke="white" stroke-width="1.5"/>
+          <path d="M4 8 Q5 6 6 8 Q7 10 8 8 Q9 6 10 8 Q11 10 12 8 Q13 6 14 8" stroke="white" stroke-width="1" fill="none"/>
+          <path d="M7 13 Q8.5 16 10 17 Q11.5 16 13 13" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">NeuroFlow.ai</div>
+        <div class="brand-sub">v1.0</div>
+      </div>
+    </div>
+    <div class="sidebar-clinic">
+      <div class="sidebar-clinic-name">Genesee Neurology Associates</div>
+      <div class="sidebar-clinic-doc">Dr. Michael Harmon, MD</div>
+    </div>
+    <nav id="sideNav">
+      <div class="nav-item active" onclick="navigate('dashboard')" data-section="dashboard">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('patients')" data-section="patients">
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        Patients
+      </div>
+      <div class="nav-item" onclick="navigate('charting')" data-section="charting">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="1" width="12" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1"/><line x1="5" y1="11" x2="9" y2="11" stroke="currentColor" stroke-width="1"/></svg>
+        Charting
+      </div>
+      <div class="nav-item" onclick="navigate('scheduling')" data-section="scheduling">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="14" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="1" x2="5" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="1" x2="11" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1"/></svg>
+        Scheduling
+      </div>
+      <div class="nav-item" onclick="navigate('billing')" data-section="billing">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="1"/><line x1="5" y1="9" x2="9" y2="9" stroke="currentColor" stroke-width="1"/></svg>
+        Billing
+      </div>
+      <div class="nav-item" onclick="navigate('messaging')" data-section="messaging">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M14 1H2a1 1 0 00-1 1v9a1 1 0 001 1h3l3 3 3-3h3a1 1 0 001-1V2a1 1 0 00-1-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        Messaging <span id="msgBadge" class="badge badge-teal" style="margin-left:auto;display:none">0</span>
+      </div>
+      <div class="nav-item" onclick="navigate('diagnostics')" data-section="diagnostics">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 8 Q2 4 3 8 Q4 12 5 8 Q6 4 7 8 Q8 12 9 8 Q10 4 11 8 Q12 12 13 8 Q14 4 15 8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Diagnostics
+      </div>
+      <div class="nav-item" onclick="navigate('settings')" data-section="settings">
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Settings
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-logout" onclick="doLogout()">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        Sign Out
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-actions" id="topbarActions"></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL ═══════════════════ -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-title">
+      <span id="modalTitle"></span>
+      <span class="modal-close" onclick="closeModal()">✕</span>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  CONSTANTS & KEYS
+// ════════════════════════════════════════════════
+const PW_KEY   = 'neuroflow_pw_v1';
+const DATA_KEY = 'neuroflow_data_v1';
+const SET_KEY  = 'neuroflow_settings_v1';
+const AI_KEY   = 'neuroflow_anthropic_key_v1';
+const DEFAULT_PW = btoa('neuro2026');
+
+let state = { section: 'dashboard', selectedPatientId: null, diagTab: 'eeg', msgThread: null };
+
+// ════════════════════════════════════════════════
+//  SEED DATA
+// ════════════════════════════════════════════════
+function getSeedData() {
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const daysAgo = n => { let d = new Date(today); d.setDate(d.getDate()-n); return fmt(d); };
+  const daysAhead = n => { let d = new Date(today); d.setDate(d.getDate()+n); return fmt(d); };
+
+  const patients = [
+    { id:'p1', name:'Robert Callahan', dob:'1957-04-12', age:67, sex:'M', phone:'585-243-1122', email:'rcallahan@email.com', address:'24 Oak St, Geneseo NY 14454', insurance:'BlueCross BlueShield', policyNum:'BCB774421', diagnosis:'Parkinson\'s Disease', icd10:'G20', medications:['Carbidopa/Levodopa 25/100mg TID','Pramipexole 0.5mg TID','Amantadine 100mg BID'], allergies:'Penicillin', lastVisit: daysAgo(14), nextAppt: daysAhead(7) },
+    { id:'p2', name:'Linda Marsh', dob:'1970-09-03', age:54, sex:'F', phone:'585-335-7844', email:'lmarsh@email.com', address:'78 Main St, Dansville NY 14437', insurance:'Aetna', policyNum:'AET991003', diagnosis:'Multiple Sclerosis (RRMS)', icd10:'G35', medications:['Ocrelizumab 300mg IV q6mo','Baclofen 10mg TID','Vitamin D 2000IU daily'], allergies:'NKDA', lastVisit: daysAgo(7), nextAppt: daysAhead(21) },
+    { id:'p3', name:'Daniel Torres', dob:'1990-11-17', age:34, sex:'M', phone:'585-554-0932', email:'dtorres@email.com', address:'5 Elm Ave, Avon NY 14414', insurance:'Cigna', policyNum:'CIG55231', diagnosis:'Epilepsy, focal onset', icd10:'G40.209', medications:['Levetiracetam 1000mg BID','Lamotrigine 150mg BID'], allergies:'Sulfa drugs', lastVisit: daysAgo(30), nextAppt: daysAhead(30) },
+    { id:'p4', name:'Margaret Wells', dob:'1976-02-28', age:48, sex:'F', phone:'585-668-1240', email:'mwells@email.com', address:'312 Ridge Rd, Mount Morris NY 14510', insurance:'United Healthcare', policyNum:'UHC882120', diagnosis:'Chronic Migraine', icd10:'G43.709', medications:['Topiramate 50mg BID','Sumatriptan 50mg PRN','Amitriptyline 25mg QHS'], allergies:'Aspirin (GI intolerance)', lastVisit: daysAgo(21), nextAppt: daysAhead(14) },
+    { id:'p5', name:'Frank Osei', dob:'1952-06-08', age:72, sex:'M', phone:'585-243-5589', email:'fosei@email.com', address:'88 Maple Dr, Geneseo NY 14454', insurance:'Medicare', policyNum:'1EG4-A12-XK18', diagnosis:'Ischemic Stroke (recovery)', icd10:'I63.50', medications:['Aspirin 81mg daily','Atorvastatin 40mg QHS','Clopidogrel 75mg daily','Lisinopril 10mg daily'], allergies:'Warfarin (prior bleed)', lastVisit: daysAgo(5), nextAppt: daysAhead(3) },
+    { id:'p6', name:'Patricia Kim', dob:'1963-08-21', age:61, sex:'F', phone:'585-335-4471', email:'pkim@email.com', address:'19 Cedar Ln, Dansville NY 14437', insurance:'Medicare + AARP Supplement', policyNum:'MED441229', diagnosis:'Peripheral Neuropathy (diabetic)', icd10:'E11.40', medications:['Gabapentin 600mg TID','Duloxetine 60mg daily','Metformin 1000mg BID'], allergies:'NKDA', lastVisit: daysAgo(45), nextAppt: daysAhead(45) },
+    { id:'p7', name:'James Holloway', dob:'1969-12-05', age:55, sex:'M', phone:'585-554-8821', email:'jholloway@email.com', address:'47 Birch Ct, Avon NY 14414', insurance:'Empire BlueCross', policyNum:'EMP330018', diagnosis:'Essential Tremor', icd10:'G25.0', medications:['Propranolol 40mg BID','Primidone 50mg QHS'], allergies:'NKDA', lastVisit: daysAgo(60), nextAppt: daysAhead(10) },
+    { id:'p8', name:'Susan Nguyen', dob:'1997-03-14', age:29, sex:'F', phone:'585-668-9932', email:'snguyen@email.com', address:'203 Park Ave, Mount Morris NY 14510', insurance:'Cigna', policyNum:'CIG99012', diagnosis:'New Patient — Headache Evaluation', icd10:'R51.9', medications:['Ibuprofen 400mg PRN'], allergies:'Latex', lastVisit: null, nextAppt: daysAhead(1) },
+  ];
+
+  const appointments = [
+    { id:'a1', patientId:'p5', patientName:'Frank Osei', type:'Follow-up', date: fmt(today), time:'9:00', duration:30, notes:'Stroke recovery check, gait assessment', status:'confirmed' },
+    { id:'a2', patientId:'p8', patientName:'Susan Nguyen', type:'New Patient', date: fmt(today), time:'10:00', duration:60, notes:'Headache evaluation — new pt intake', status:'confirmed' },
+    { id:'a3', patientId:'p2', patientName:'Linda Marsh', type:'Follow-up', date: fmt(today), time:'13:30', duration:30, notes:'MS follow-up, infusion review', status:'confirmed' },
+    { id:'a4', patientId:'p1', patientName:'Robert Callahan', type:'Follow-up', date: daysAhead(1), time:'9:30', duration:30, notes:'Parkinson\'s medication adjustment', status:'confirmed' },
+    { id:'a5', patientId:'p3', patientName:'Daniel Torres', type:'EEG', date: daysAhead(1), time:'11:00', duration:90, notes:'Routine EEG — seizure monitoring', status:'confirmed' },
+    { id:'a6', patientId:'p7', patientName:'James Holloway', type:'Follow-up', date: daysAhead(2), time:'9:00', duration:30, notes:'ET follow-up, tremor assessment', status:'confirmed' },
+    { id:'a7', patientId:'p4', patientName:'Margaret Wells', type:'Follow-up', date: daysAhead(2), time:'14:00', duration:30, notes:'Migraine management review', status:'confirmed' },
+    { id:'a8', patientId:'p6', patientName:'Patricia Kim', type:'EMG', date: daysAhead(3), time:'10:00', duration:60, notes:'Lower extremity EMG/NCS', status:'confirmed' },
+  ];
+
+  const notes = [
+    { id:'n1', patientId:'p1', date: daysAgo(14), type:'Follow-up', template:'Parkinson\'s Disease', S:'Patient reports mild worsening of morning stiffness. Tremor at rest is stable. Freezing episodes approximately 2x per week.', O:'Alert and oriented x3. Resting tremor 2/5 right hand. Bradykinesia moderate. Rigidity mild. Gait with small steps, reduced arm swing. UPDRS motor score 22.', A:'Parkinson\'s disease with mild motor fluctuations. Overall stable on current regimen.', P:'Continue current medications. Add Amantadine 100mg QAM for freezing. RTC 4 weeks. Consider DBS referral if progression continues.', author:'Dr. Michael Harmon, MD' },
+    { id:'n2', patientId:'p5', date: daysAgo(5), type:'Follow-up', template:'Stroke/TIA', S:'Patient reports improved speech. Right arm weakness improving with PT. Denies new neurological symptoms.', O:'BP 128/76. Alert and oriented. Mild dysarthria. Right arm strength 4/5. Right hand grip 3/5. Ambulating with cane. NIHSS 3.', A:'Ischemic stroke with improving deficits. Continues antiplatelet therapy.', P:'Continue aspirin, clopidogrel, atorvastatin. Continue outpatient PT/OT/ST. Repeat MRI brain 3 months. RTC 2 weeks.', author:'Dr. Michael Harmon, MD' },
+  ];
+
+  const charges = [
+    { id:'c1', patientId:'p1', patientName:'Robert Callahan', date: daysAgo(14), cpt:'99214', icd10:'G20', description:'Office Visit - Est. Patient Level 4', amount:285, status:'Paid', payer:'BlueCross BlueShield' },
+    { id:'c2', patientId:'p5', patientName:'Frank Osei', date: daysAgo(5), cpt:'99213', icd10:'I63.50', description:'Office Visit - Est. Patient Level 3', amount:195, status:'Submitted', payer:'Medicare' },
+    { id:'c3', patientId:'p3', patientName:'Daniel Torres', date: daysAgo(30), cpt:'95819', icd10:'G40.209', description:'EEG with Sleep', amount:420, status:'Paid', payer:'Cigna' },
+    { id:'c4', patientId:'p4', patientName:'Margaret Wells', date: daysAgo(21), cpt:'99215', icd10:'G43.709', description:'Office Visit - Est. Patient Level 5', amount:340, status:'Denied', payer:'United Healthcare' },
+  ];
+
+  const messages = [
+    { id:'m1', patientId:'p4', patientName:'Margaret Wells', condition:'Chronic Migraine', unread:true, thread:[
+      { sender:'patient', name:'Margaret Wells', text:'Hi Dr. Harmon, I\'ve been having really bad migraines again this week — 3 in 4 days. My Sumatriptan isn\'t helping much. What should I do?', time: daysAgo(1)+' 10:22' },
+      { sender:'doctor', name:'Dr. Harmon', text:'Hello Margaret, I\'m sorry to hear that. Let\'s increase your Sumatriptan dose to 100mg for breakthrough attacks. If you have more than 3 migraines this week, please call the office and we\'ll schedule an urgent visit. Make sure you\'re staying hydrated.', time: daysAgo(1)+' 11:45' },
+      { sender:'patient', name:'Margaret Wells', text:'Thank you! Will do. Also, is it okay to take Ibuprofen with the Sumatriptan?', time: daysAgo(1)+' 12:03' },
+    ]},
+    { id:'m2', patientId:'p2', patientName:'Linda Marsh', condition:'Multiple Sclerosis (RRMS)', unread:true, thread:[
+      { sender:'patient', name:'Linda Marsh', text:'Dr. Harmon — I\'m noticing increased fatigue and some leg spasticity over the past 2 weeks. Should I be worried about a relapse?', time: daysAgo(3)+' 9:15' },
+    ]},
+    { id:'m3', patientId:'p1', patientName:'Robert Callahan', condition:'Parkinson\'s Disease', unread:false, thread:[
+      { sender:'patient', name:'Robert Callahan', text:'Good morning. I wanted to let you know the Amantadine is helping with the freezing. Maybe 1 episode yesterday instead of 2-3.', time: daysAgo(5)+' 8:44' },
+      { sender:'doctor', name:'Dr. Harmon', text:'That\'s great news, Robert! Let\'s keep you on it and reassess at your next appointment. Keep a brief daily log of freezing episodes if you can.', time: daysAgo(5)+' 10:12' },
+    ]},
+  ];
+
+  const diagnostics = {
+    eeg: [
+      { id:'e1', patientId:'p3', patientName:'Daniel Torres', date: daysAgo(30), indication:'Seizure monitoring', technician:'Sarah Cole, R.EEG.T.', findings:'Abnormal-Focal', summary:'Left temporal intermittent rhythmic delta activity (TIRDA). No ictal patterns. Background is mildly abnormal.', icd10:'G40.209' },
+    ],
+    emg: [
+      { id:'em1', patientId:'p6', patientName:'Patricia Kim', date: daysAgo(45), indication:'Bilateral lower extremity weakness', technician:'Dr. Michael Harmon, MD', findings:'Abnormal', summary:'Sensorimotor peripheral neuropathy pattern bilaterally, axonal predominant. Consistent with diabetic peripheral neuropathy.', icd10:'E11.40' },
+    ],
+    imaging: [
+      { id:'im1', patientId:'p5', patientName:'Frank Osei', date: daysAgo(40), modality:'MRI Brain', indication:'Ischemic stroke workup', findings:'Left MCA territory subacute infarct, approximately 2.3cm. No hemorrhagic transformation. Periventricular white matter changes consistent with chronic small vessel disease.', icd10:'I63.50' },
+      { id:'im2', patientId:'p2', patientName:'Linda Marsh', date: daysAgo(60), modality:'MRI Brain', indication:'MS lesion burden assessment', findings:'Multiple periventricular and juxtacortical T2/FLAIR hyperintense lesions consistent with demyelinating disease. One new lesion compared to prior study (right posterior periventricular). No gadolinium enhancement.', icd10:'G35' },
+    ]
+  };
+
+  return { patients, appointments, notes, charges, messages, diagnostics, activity:[
+    { text:'New patient Susan Nguyen scheduled for tomorrow', time: daysAgo(0)+' 9:00' },
+    { text:'Charge submitted for Frank Osei (99213)', time: daysAgo(5)+' 11:30' },
+    { text:'EEG completed for Daniel Torres', time: daysAgo(30)+' 14:00' },
+    { text:'Note signed for Robert Callahan', time: daysAgo(14)+' 16:00' },
+    { text:'Message from Margaret Wells (urgent)', time: daysAgo(1)+' 10:22' },
+  ]};
+}
+
+// ════════════════════════════════════════════════
+//  LOAD / SAVE
+// ════════════════════════════════════════════════
+let appData;
+function loadData() {
+  const raw = localStorage.getItem(DATA_KEY);
+  appData = raw ? JSON.parse(raw) : getSeedData();
+}
+function saveData() { localStorage.setItem(DATA_KEY, JSON.stringify(appData)); }
+
+function loadSettings() {
+  const raw = localStorage.getItem(SET_KEY);
+  return raw ? JSON.parse(raw) : { clinicName:'Genesee Neurology Associates', doctorName:'Dr. Michael Harmon, MD', npi:'1234567890', address:'42 Court St, Geneseo NY 14454', phone:'(585) 243-0100' };
+}
+function saveSettings(s) { localStorage.setItem(SET_KEY, JSON.stringify(s)); }
+
+function getApiKey() { return localStorage.getItem(AI_KEY) || ''; }
+function saveApiKey(k) { localStorage.setItem(AI_KEY, k); }
+
+// ════════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════════
+function doLogin() {
+  const pw = document.getElementById('loginPw').value;
+  const stored = localStorage.getItem(PW_KEY) || DEFAULT_PW;
+  if (btoa(pw) === stored) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    loadData();
+    navigate('dashboard');
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function doLogout() {
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPw').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+// ════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════
+const TITLES = { dashboard:'Dashboard', patients:'Patients', charting:'Charting', scheduling:'Scheduling', billing:'Billing & Codes', messaging:'Patient Messaging', diagnostics:'Neurodiagnostics', settings:'Settings' };
+
+function navigate(section) {
+  state.section = section;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.section === section));
+  document.getElementById('topbarTitle').textContent = TITLES[section] || section;
+  document.getElementById('topbarActions').innerHTML = '';
+  const renders = { dashboard: renderDashboard, patients: renderPatients, charting: renderCharting, scheduling: renderScheduling, billing: renderBilling, messaging: renderMessaging, diagnostics: renderDiagnostics, settings: renderSettings };
+  if (renders[section]) renders[section]();
+  updateMsgBadge();
+}
+
+function updateMsgBadge() {
+  const unread = appData.messages.filter(m => m.unread).length;
+  const badge = document.getElementById('msgBadge');
+  badge.style.display = unread ? 'inline-block' : 'none';
+  badge.textContent = unread;
+}
+
+// ════════════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════════════
+function openModal(title, bodyHtml) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+// ════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayAppts = appData.appointments.filter(a => a.date === today);
+  const openCharts = appData.patients.filter(p => !appData.notes.find(n => n.patientId === p.id && n.date === today)).length;
+  const pendingClaims = appData.charges.filter(c => c.status === 'Submitted' || c.status === 'Draft').length;
+
+  document.getElementById('content').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Patients</div>
+        <div class="stat-value">${appData.patients.length}</div>
+        <div class="stat-sub">Active roster</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-label">Today's Appointments</div>
+        <div class="stat-value">${todayAppts.length}</div>
+        <div class="stat-sub">${todayAppts.filter(a=>a.status==='confirmed').length} confirmed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open Charts</div>
+        <div class="stat-value">${openCharts}</div>
+        <div class="stat-sub">Awaiting notes today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Claims</div>
+        <div class="stat-value">${pendingClaims}</div>
+        <div class="stat-sub">Submitted + Draft</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Today's Schedule <button class="btn btn-teal btn-sm" onclick="navigate('scheduling')">View All</button></div>
+        ${todayAppts.length ? todayAppts.map(a => `
+          <div class="appt-mini">
+            <div class="appt-time-mini">${a.time}</div>
+            <div>
+              <div class="appt-name-mini">${a.patientName}</div>
+              <div class="appt-type-mini">${a.type} · ${a.duration}min</div>
+            </div>
+          </div>`).join('') : '<div class="text-muted text-sm">No appointments today</div>'}
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Activity</div>
+        ${appData.activity.map(a => `
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div>
+              <div class="activity-text">${a.text}</div>
+              <div class="activity-time">${a.time}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════
+//  PATIENTS
+// ════════════════════════════════════════════════
+function renderPatients(filter='') {
+  const topbar = document.getElementById('topbarActions');
+  topbar.innerHTML = `<button class="btn btn-teal btn-sm" onclick="openAddPatient()">+ Add Patient</button>`;
+
+  const list = appData.patients.filter(p => !filter || p.name.toLowerCase().includes(filter.toLowerCase()) || p.diagnosis.toLowerCase().includes(filter.toLowerCase()));
+  const selected = state.selectedPatientId ? appData.patients.find(p => p.id === state.selectedPatientId) : null;
+
+  document.getElementById('content').innerHTML = `
+    <div class="split-layout">
+      <div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M9 9l3 3"/></svg>
+          <input class="search-bar" placeholder="Search patients..." oninput="renderPatients(this.value)" value="${filter}">
+        </div>
+        <div class="patient-list">
+          ${list.map(p => `
+            <div class="patient-row ${p.id === state.selectedPatientId ? 'selected' : ''}" onclick="selectPatient('${p.id}')">
+              <div class="patient-avatar">${p.name.split(' ').map(n=>n[0]).join('')}</div>
+              <div>
+                <div class="patient-name">${p.name}</div>
+                <div class="patient-meta">${p.age}${p.sex} · ${p.diagnosis}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div id="patientDetail">
+        ${selected ? renderPatientDetail(selected) : '<div class="card"><div class="text-muted text-sm" style="text-align:center;padding:40px">Select a patient to view details</div></div>'}
+      </div>
+    </div>`;
+}
+
+function selectPatient(id) { state.selectedPatientId = id; renderPatients(); }
+
+function renderPatientDetail(p) {
+  const notes = appData.notes.filter(n => n.patientId === p.id);
+  return `
+    <div class="card">
+      <div class="card-title">
+        <span style="display:flex;align-items:center;gap:10px">
+          <div class="patient-avatar" style="width:42px;height:42px;font-size:15px">${p.name.split(' ').map(n=>n[0]).join('')}</div>
+          <div><div style="font-size:16px">${p.name}</div><div class="text-muted text-sm">${p.age}y/o ${p.sex} · DOB: ${p.dob}</div></div>
+        </span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('charting')">+ Note</button>
+          <button class="btn btn-teal btn-sm" onclick="navigate('messaging')">Message</button>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:12px">
+        <div>
+          <div class="text-muted text-sm">Diagnosis</div>
+          <div style="font-weight:600;margin-top:2px">${p.diagnosis}</div>
+          <div class="text-muted text-sm mt-2">ICD-10: ${p.icd10}</div>
+        </div>
+        <div>
+          <div class="text-muted text-sm">Insurance</div>
+          <div style="font-weight:600;margin-top:2px">${p.insurance}</div>
+          <div class="text-muted text-sm mt-2">Policy: ${p.policyNum}</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:12px">
+        <div><div class="text-muted text-sm">Phone</div><div style="margin-top:2px">${p.phone}</div></div>
+        <div><div class="text-muted text-sm">Email</div><div style="margin-top:2px">${p.email}</div></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="text-muted text-sm">Address</div>
+        <div style="margin-top:2px">${p.address}</div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="text-muted text-sm" style="margin-bottom:4px">Current Medications</div>
+        ${p.medications.map(m => `<div class="badge badge-teal" style="margin:2px">${m}</div>`).join('')}
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="text-muted text-sm">Allergies</div>
+        <div style="margin-top:2px;color:#EF4444">${p.allergies}</div>
+      </div>
+      <div>
+        <div class="card-title">Chart History</div>
+        ${notes.length ? notes.map(n => `
+          <div style="padding:10px;background:#111827;border-radius:8px;margin-bottom:8px;border:1px solid #374151;cursor:pointer" onclick="viewNote('${n.id}')">
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-weight:600;font-size:13px">${n.type} — ${n.template}</span>
+              <span class="text-muted text-sm">${n.date}</span>
+            </div>
+            <div class="text-muted text-sm mt-2">${n.A.substring(0,80)}...</div>
+          </div>`).join('') : '<div class="text-muted text-sm">No notes on file</div>'}
+      </div>
+    </div>`;
+}
+
+function viewNote(id) {
+  const n = appData.notes.find(x => x.id === id);
+  if (!n) return;
+  openModal(`${n.type} Note — ${n.date}`, `
+    <div class="soap-section"><div class="soap-label">S — Subjective</div><div style="font-size:13px;line-height:1.6">${n.S}</div></div>
+    <div class="soap-section"><div class="soap-label">O — Objective</div><div style="font-size:13px;line-height:1.6">${n.O}</div></div>
+    <div class="soap-section"><div class="soap-label">A — Assessment</div><div style="font-size:13px;line-height:1.6">${n.A}</div></div>
+    <div class="soap-section"><div class="soap-label">P — Plan</div><div style="font-size:13px;line-height:1.6">${n.P}</div></div>
+    <div class="text-muted text-sm mt-4">Signed by ${n.author}</div>`);
+}
+
+function openAddPatient() {
+  openModal('Add New Patient', `
+    <div class="form-row form-row-2">
+      <div><label>First Name</label><input type="text" id="np_first" placeholder="Jane"></div>
+      <div><label>Last Name</label><input type="text" id="np_last" placeholder="Smith"></div>
+    </div>
+    <div class="form-row form-row-3">
+      <div><label>Date of Birth</label><input type="date" id="np_dob"></div>
+      <div><label>Sex</label><select id="np_sex"><option value="F">Female</option><option value="M">Male</option></select></div>
+      <div><label>Phone</label><input type="tel" id="np_phone"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Email</label><input type="email" id="np_email"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Address</label><input type="text" id="np_address"></div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Diagnosis</label><input type="text" id="np_dx" placeholder="Parkinson's Disease"></div>
+      <div><label>ICD-10</label><input type="text" id="np_icd" placeholder="G20"></div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Insurance</label><input type="text" id="np_ins"></div>
+      <div><label>Policy #</label><input type="text" id="np_pol"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Allergies</label><input type="text" id="np_allergy" placeholder="NKDA"></div>
+    </div>
+    <button class="btn btn-teal w-full" style="margin-top:8px" onclick="saveNewPatient()">Save Patient</button>`);
+}
+
+function saveNewPatient() {
+  const first = document.getElementById('np_first').value.trim();
+  const last = document.getElementById('np_last').value.trim();
+  if (!first || !last) { alert('Name required'); return; }
+  const dob = document.getElementById('np_dob').value;
+  const age = dob ? Math.floor((new Date() - new Date(dob)) / 31557600000) : 0;
+  const p = {
+    id: 'p' + Date.now(),
+    name: first + ' ' + last,
+    dob, age,
+    sex: document.getElementById('np_sex').value,
+    phone: document.getElementById('np_phone').value,
+    email: document.getElementById('np_email').value,
+    address: document.getElementById('np_address').value,
+    insurance: document.getElementById('np_ins').value,
+    policyNum: document.getElementById('np_pol').value,
+    diagnosis: document.getElementById('np_dx').value || 'Pending',
+    icd10: document.getElementById('np_icd').value || '',
+    medications: [],
+    allergies: document.getElementById('np_allergy').value || 'NKDA',
+    lastVisit: null, nextAppt: null
+  };
+  appData.patients.push(p);
+  appData.activity.unshift({ text:`New patient added: ${p.name}`, time: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  closeModal();
+  state.selectedPatientId = p.id;
+  renderPatients();
+}
+
+// ════════════════════════════════════════════════
+//  CHARTING
+// ════════════════════════════════════════════════
+const NEURO_TEMPLATES = {
+  'Parkinson\'s Disease': { S:'Patient reports [tremor/bradykinesia/rigidity/gait changes]. [Freezing episodes] noted.', O:'Alert and oriented x3. Resting tremor [grade]/5. Bradykinesia [mild/moderate/severe]. Rigidity [mild/moderate]. Gait [describe]. UPDRS motor score [X].', A:'Parkinson\'s disease, [stable/progressing]. Current medications [adequate/need adjustment].', P:'[Continue/Adjust] current medications. RTC [X] weeks.' },
+  'Multiple Sclerosis': { S:'Patient reports [fatigue/spasticity/vision changes/cognitive fog]. Last relapse [date].', O:'Alert and oriented. EDSS score [X]. [Describe focal findings]. MRI [stable/new lesion].', A:'Multiple sclerosis, [RRMS/SPMS/PPMS], [stable/relapse/progression].', P:'[Continue/Change] DMT. [Pulse steroids if relapse]. RTC [X] weeks.' },
+  'Epilepsy': { S:'Patient reports [seizure frequency/type/duration]. Last seizure [date]. [Aura description].', O:'Alert and oriented. No focal deficits on exam. EEG [results].', A:'Epilepsy, [focal onset/generalized], [controlled/uncontrolled] on current AED.', P:'[Adjust/Continue] AEDs. Driving restriction discussed. RTC [X] weeks.' },
+  'Migraine': { S:'Patient reports [headache frequency, severity, character]. Triggers [list]. Rescue medication [effective/ineffective].', O:'Alert and oriented. No focal deficits. No papilledema.', A:'Chronic migraine [with/without aura], [controlled/poorly controlled].', P:'[Continue/Adjust] preventive therapy. Update rescue medication. Headache diary. RTC [X] weeks.' },
+  'Stroke/TIA': { S:'Patient reports [deficits/recovery progress]. [New symptoms?]', O:'BP [X/X]. Alert and oriented. [Focal deficits]. NIHSS [X]. Gait [describe].', A:'[Ischemic/TIA] with [improving/stable/worsening] deficits. On antiplatelet/anticoagulation therapy.', P:'Continue [medications]. Repeat imaging [date]. Continue PT/OT/ST. RTC [X] weeks.' },
+  'Peripheral Neuropathy': { S:'Patient reports [pain/numbness/tingling/weakness] in [distribution]. [Worse at night?]', O:'Reduced sensation to [light touch/pinprick/vibration] in [distribution]. DTRs [diminished/absent] distally. Strength [grade]/5.', A:'Peripheral neuropathy, [axonal/demyelinating], [diabetic/idiopathic/other], [stable/progressive].', P:'[Adjust/Continue] neuropathic pain therapy. Foot care education. EMG/NCS [date]. RTC [X] weeks.' },
+  'Essential Tremor': { S:'Patient reports tremor affecting [hands/voice/head]. [Functional impact]. Response to beta-blocker [good/partial/none].', O:'Action/postural tremor [grade]/5 in [distribution]. No resting tremor. No cogwheeling. Gait normal.', A:'Essential tremor, [mild/moderate/severe], [controlled/partially controlled] on therapy.', P:'[Adjust/Continue] Propranolol/Primidone. Avoid caffeine. RTC [X] weeks.' },
+  'General Neurology': { S:'Chief complaint: [describe]. Duration: [X]. Associated symptoms: [list].', O:'Vitals stable. Alert and oriented x3. Cranial nerves intact. Motor [normal/abnormal]. Sensory [normal/abnormal]. Coordination [normal/abnormal]. Gait [normal/abnormal].', A:'[Diagnosis]. [Etiology].', P:'[Plan]. RTC [X] weeks.' },
+};
+
+function renderCharting() {
+  document.getElementById('topbarActions').innerHTML = '';
+  document.getElementById('content').innerHTML = `
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">New SOAP Note</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div>
+            <label>Patient</label>
+            <select id="chart_pt" onchange="updateChartTemplate()">
+              <option value="">Select patient...</option>
+              ${appData.patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="form-row form-row-2" style="margin-bottom:10px">
+          <div>
+            <label>Visit Type</label>
+            <select id="chart_type">
+              <option>Follow-up</option><option>New Patient</option><option>Telehealth</option><option>Procedure</option><option>Urgent</option>
+            </select>
+          </div>
+          <div>
+            <label>Template</label>
+            <select id="chart_tpl" onchange="applyTemplate()">
+              ${Object.keys(NEURO_TEMPLATES).map(t => `<option>${t}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="soap-section">
+          <div class="soap-label">S — Subjective</div>
+          <textarea id="soap_s" rows="3" placeholder="Patient's reported symptoms..."></textarea>
+        </div>
+        <div class="soap-section">
+          <div class="soap-label">O — Objective</div>
+          <textarea id="soap_o" rows="3" placeholder="Examination findings..."></textarea>
+        </div>
+        <div class="soap-section">
+          <div class="soap-label">A — Assessment</div>
+          <textarea id="soap_a" rows="2" placeholder="Diagnosis and clinical impression..."></textarea>
+        </div>
+        <div class="soap-section">
+          <div class="soap-label">P — Plan</div>
+          <textarea id="soap_p" rows="3" placeholder="Treatment plan..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-teal" onclick="saveNote()">Sign & Save Note</button>
+          <button class="btn btn-ghost" onclick="openAiNoteAssist()">✦ AI Assist</button>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Recent Notes</div>
+          ${appData.notes.map(n => {
+            const pt = appData.patients.find(p => p.id === n.patientId);
+            return `<div style="padding:10px;background:#111827;border-radius:8px;margin-bottom:8px;border:1px solid #374151;cursor:pointer" onclick="viewNote('${n.id}')">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:600;font-size:13px">${pt ? pt.name : 'Unknown'}</span>
+                <span class="text-muted text-sm">${n.date}</span>
+              </div>
+              <div class="text-muted text-sm mt-2">${n.template} · ${n.type}</div>
+            </div>`;
+          }).join('')}
+          ${appData.notes.length === 0 ? '<div class="text-muted text-sm">No notes yet</div>' : ''}
+        </div>
+      </div>
+    </div>`;
+  applyTemplate();
+}
+
+function applyTemplate() {
+  const tpl = document.getElementById('chart_tpl');
+  if (!tpl) return;
+  const t = NEURO_TEMPLATES[tpl.value];
+  if (!t) return;
+  document.getElementById('soap_s').value = t.S;
+  document.getElementById('soap_o').value = t.O;
+  document.getElementById('soap_a').value = t.A;
+  document.getElementById('soap_p').value = t.P;
+}
+
+function openAiNoteAssist() {
+  const ptId = document.getElementById('chart_pt').value;
+  const tpl = document.getElementById('chart_tpl').value;
+  openModal('✦ AI Note Assistant', `
+    <div style="margin-bottom:12px;font-size:13px;color:#9CA3AF">Enter brief bullet points about this visit. Claude will generate a complete SOAP note.</div>
+    <label>Template: <strong class="text-teal">${tpl}</strong></label>
+    <textarea id="ai_bullets" rows="5" style="margin-top:8px" placeholder="• Patient c/o worsening tremor x2 weeks&#10;• Medications stable&#10;• Exam: tremor 3/5, bradykinesia mild&#10;• Plan: adjust levodopa"></textarea>
+    <button class="btn btn-teal w-full" style="margin-top:12px" onclick="runAiNote('${ptId}','${tpl}')">Generate SOAP Note</button>
+    <div id="ai_note_result" class="ai-box hidden"><div class="ai-box-title">✦ AI Generated Note</div><div id="ai_note_text" class="ai-result"></div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="applyAiNote()">Apply to Form</button></div>`);
+}
+
+async function runAiNote(ptId, tpl) {
+  const key = getApiKey();
+  if (!key) { alert('Enter your Anthropic API key in Settings first.'); return; }
+  const bullets = document.getElementById('ai_bullets').value;
+  if (!bullets.trim()) { alert('Enter visit notes first.'); return; }
+  const pt = ptId ? appData.patients.find(p => p.id === ptId) : null;
+  const box = document.getElementById('ai_note_result');
+  box.classList.remove('hidden');
+  document.getElementById('ai_note_text').innerHTML = '<div class="ai-spinner"><div class="spinner"></div>Generating note...</div>';
+  const prompt = `You are a neurologist's clinical documentation assistant. Generate a complete, professional SOAP note for a neurology office visit.
+
+Patient: ${pt ? pt.name + ', ' + pt.age + 'y/o ' + pt.sex + ', Dx: ' + pt.diagnosis : 'Not specified'}
+Visit Template: ${tpl}
+Clinical Bullets:
+${bullets}
+
+Output EXACTLY in this format with these labels (no extra text before or after):
+S: [subjective section]
+O: [objective section]
+A: [assessment section]
+P: [plan section]
+
+Be clinically accurate, concise, and professional. Use standard neurology terminology.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:800, messages:[{ role:'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    const text = data.content[0].text;
+    document.getElementById('ai_note_text').textContent = text;
+    window._aiNoteText = text;
+  } catch(e) {
+    document.getElementById('ai_note_text').textContent = 'Error: ' + e.message;
+  }
+}
+
+function applyAiNote() {
+  const text = window._aiNoteText || '';
+  const parse = (label) => {
+    const re = new RegExp(label + ':\\s*([\\s\\S]*?)(?=\\n[SOAP]:|$)', 'i');
+    const m = text.match(re);
+    return m ? m[1].trim() : '';
+  };
+  document.getElementById('soap_s').value = parse('S');
+  document.getElementById('soap_o').value = parse('O');
+  document.getElementById('soap_a').value = parse('A');
+  document.getElementById('soap_p').value = parse('P');
+  closeModal();
+}
+
+function saveNote() {
+  const ptId = document.getElementById('chart_pt').value;
+  if (!ptId) { alert('Select a patient first.'); return; }
+  const note = {
+    id: 'n' + Date.now(),
+    patientId: ptId,
+    date: new Date().toISOString().split('T')[0],
+    type: document.getElementById('chart_type').value,
+    template: document.getElementById('chart_tpl').value,
+    S: document.getElementById('soap_s').value,
+    O: document.getElementById('soap_o').value,
+    A: document.getElementById('soap_a').value,
+    P: document.getElementById('soap_p').value,
+    author: 'Dr. Michael Harmon, MD'
+  };
+  appData.notes.unshift(note);
+  const pt = appData.patients.find(p => p.id === ptId);
+  appData.activity.unshift({ text:`Note signed: ${pt.name} (${note.template})`, time: note.date + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  alert('Note signed and saved.');
+  renderCharting();
+}
+
+// ════════════════════════════════════════════════
+//  SCHEDULING
+// ════════════════════════════════════════════════
+function renderScheduling() {
+  document.getElementById('topbarActions').innerHTML = `<button class="btn btn-teal btn-sm" onclick="openAddAppt()">+ Schedule</button>`;
+  const today = new Date();
+  const weekDays = [];
+  const dow = today.getDay();
+  const monday = new Date(today); monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  for(let i=0;i<5;i++) { const d = new Date(monday); d.setDate(monday.getDate()+i); weekDays.push(d); }
+  const fmt = d => d.toISOString().split('T')[0];
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
+  const dayLabels = weekDays.map(d => dayNames[weekDays.indexOf(d)] + ' ' + (d.getMonth()+1)+'/'+d.getDate());
+
+  const times = [];
+  for(let h=8;h<17;h++) { times.push(`${h}:00`); times.push(`${h}:30`); }
+
+  let html = `<div class="sched-grid">
+    <div class="sched-header"></div>
+    ${dayLabels.map((d,i) => `<div class="sched-header" style="${fmt(weekDays[i])===fmt(today)?'background:#0D9488;color:#fff':''}">${d}</div>`).join('')}`;
+
+  times.forEach(t => {
+    html += `<div class="sched-time">${t}</div>`;
+    weekDays.forEach((d,i) => {
+      const appts = appData.appointments.filter(a => a.date === fmt(d) && a.time === t);
+      html += `<div class="sched-slot" onclick="openAddAppt('${fmt(d)}','${t}')">`;
+      appts.forEach(a => {
+        const cls = a.type === 'New Patient' ? 'new-pt' : (a.type === 'EEG' || a.type === 'EMG') ? 'procedure' : '';
+        html += `<div class="sched-appt ${cls}" title="${a.patientName} — ${a.notes}" onclick="event.stopPropagation();viewAppt('${a.id}')">${a.time} ${a.patientName.split(' ')[0]}</div>`;
+      });
+      html += `</div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('content').innerHTML = html;
+}
+
+function viewAppt(id) {
+  const a = appData.appointments.find(x => x.id === id);
+  if (!a) return;
+  openModal('Appointment Details', `
+    <div class="form-row form-row-2">
+      <div><label>Patient</label><div style="font-weight:600">${a.patientName}</div></div>
+      <div><label>Type</label><div>${a.type}</div></div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Date</label><div>${a.date}</div></div>
+      <div><label>Time</label><div>${a.time} (${a.duration}min)</div></div>
+    </div>
+    <div><label>Notes</label><div>${a.notes || '—'}</div></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('charting')">Open Chart</button>
+      <button class="btn btn-red btn-sm" onclick="cancelAppt('${a.id}')">Cancel Appointment</button>
+    </div>`);
+}
+
+function cancelAppt(id) {
+  appData.appointments = appData.appointments.filter(a => a.id !== id);
+  saveData();
+  closeModal();
+  renderScheduling();
+}
+
+function openAddAppt(date='', time='') {
+  const today = new Date().toISOString().split('T')[0];
+  openModal('Schedule Appointment', `
+    <div class="form-row">
+      <div><label>Patient</label>
+        <select id="appt_pt">
+          <option value="">Select patient...</option>
+          ${appData.patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Date</label><input type="date" id="appt_date" value="${date||today}"></div>
+      <div><label>Time</label>
+        <select id="appt_time">
+          ${['8:00','8:30','9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30'].map(t => `<option ${t===time?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Type</label>
+        <select id="appt_type">
+          <option>Follow-up</option><option>New Patient</option><option>Telehealth</option><option>EEG</option><option>EMG</option>
+        </select>
+      </div>
+      <div><label>Duration (min)</label>
+        <select id="appt_dur"><option>30</option><option>60</option><option>90</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label>Notes</label><textarea id="appt_notes" rows="2"></textarea></div>
+    </div>
+    <button class="btn btn-teal w-full" onclick="saveAppt()">Schedule Appointment</button>`);
+}
+
+function saveAppt() {
+  const ptId = document.getElementById('appt_pt').value;
+  if (!ptId) { alert('Select a patient.'); return; }
+  const pt = appData.patients.find(p => p.id === ptId);
+  const a = {
+    id: 'a' + Date.now(), patientId: ptId, patientName: pt.name,
+    type: document.getElementById('appt_type').value,
+    date: document.getElementById('appt_date').value,
+    time: document.getElementById('appt_time').value,
+    duration: parseInt(document.getElementById('appt_dur').value),
+    notes: document.getElementById('appt_notes').value,
+    status: 'confirmed'
+  };
+  appData.appointments.push(a);
+  appData.activity.unshift({ text:`Appointment scheduled: ${pt.name} (${a.type}) on ${a.date}`, time: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  closeModal();
+  renderScheduling();
+}
+
+// ════════════════════════════════════════════════
+//  BILLING
+// ════════════════════════════════════════════════
+const CPT_CODES = [
+  { code:'99213', desc:'Office Visit - Established Patient Level 3', fee:175 },
+  { code:'99214', desc:'Office Visit - Established Patient Level 4', fee:285 },
+  { code:'99215', desc:'Office Visit - Established Patient Level 5', fee:340 },
+  { code:'99205', desc:'Office Visit - New Patient Level 5', fee:400 },
+  { code:'95816', desc:'EEG (awake & drowsy)', fee:320 },
+  { code:'95819', desc:'EEG with sleep', fee:420 },
+  { code:'95822', desc:'EEG (coma/sleep only)', fee:380 },
+  { code:'95860', desc:'EMG - 1 extremity', fee:185 },
+  { code:'95861', desc:'EMG - 2 extremities', fee:285 },
+  { code:'95907', desc:'Nerve Conduction (1-2 studies)', fee:155 },
+  { code:'95910', desc:'Nerve Conduction (5-6 studies)', fee:340 },
+  { code:'95913', desc:'Nerve Conduction (13+ studies)', fee:580 },
+  { code:'64640', desc:'Destruction of peripheral nerve', fee:640 },
+  { code:'62323', desc:'Injection, epidural, lumbar', fee:520 },
+  { code:'96116', desc:'Neurobehavioral status exam (1st hr)', fee:275 },
+];
+
+const ICD10_COMMON = [
+  { code:'G20', desc:'Parkinson\'s disease' }, { code:'G35', desc:'Multiple sclerosis' },
+  { code:'G40.209', desc:'Epilepsy, focal onset, NOS' }, { code:'G43.709', desc:'Chronic migraine' },
+  { code:'I63.50', desc:'Ischemic stroke' }, { code:'G25.0', desc:'Essential tremor' },
+  { code:'E11.40', desc:'T2DM with diabetic neuropathy' }, { code:'G62.9', desc:'Peripheral neuropathy, unspecified' },
+  { code:'R51.9', desc:'Headache, unspecified' }, { code:'G89.29', desc:'Chronic pain' },
+  { code:'G47.00', desc:'Insomnia, unspecified' }, { code:'G90.3', desc:'Multi-system degeneration' },
+];
+
+function renderBilling(cptFilter='', diagFilter='') {
+  document.getElementById('topbarActions').innerHTML = `<button class="btn btn-teal btn-sm" onclick="openChargeCapture()">+ Capture Charge</button>`;
+  const filteredCpt = CPT_CODES.filter(c => !cptFilter || c.code.includes(cptFilter) || c.desc.toLowerCase().includes(cptFilter.toLowerCase()));
+  const filteredIcd = ICD10_COMMON.filter(c => !diagFilter || c.code.includes(diagFilter) || c.desc.toLowerCase().includes(diagFilter.toLowerCase()));
+
+  const statusBadge = s => ({ Paid:'badge-green', Submitted:'badge-teal', Draft:'badge-gray', Denied:'badge-red' }[s] || 'badge-gray');
+
+  document.getElementById('content').innerHTML = `
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">CPT Code Library</div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M9 9l3 3"/></svg>
+          <input class="search-bar" placeholder="Search CPT codes..." oninput="renderBilling(this.value, document.getElementById('icd_search')?.value||'')" value="${cptFilter}">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CPT</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              ${filteredCpt.map(c => `<tr><td><code style="color:#0D9488">${c.code}</code></td><td>${c.desc}</td><td>$${c.fee}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">ICD-10 Quick Lookup</div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M9 9l3 3"/></svg>
+          <input id="icd_search" class="search-bar" placeholder="Search conditions..." oninput="renderBilling(document.querySelector('.search-bar').value, this.value)" value="${diagFilter}">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ICD-10</th><th>Description</th></tr></thead>
+            <tbody>
+              ${filteredIcd.map(c => `<tr><td><code style="color:#0D9488">${c.code}</code></td><td>${c.desc}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Claim Tracker <span class="text-muted text-sm" style="font-weight:400">${appData.charges.length} claims</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Patient</th><th>CPT</th><th>ICD-10</th><th>Description</th><th>Amount</th><th>Payer</th><th>Status</th></tr></thead>
+          <tbody>
+            ${appData.charges.map(c => `
+              <tr>
+                <td>${c.date}</td>
+                <td>${c.patientName}</td>
+                <td><code style="color:#0D9488">${c.cpt}</code></td>
+                <td><code style="color:#9CA3AF">${c.icd10}</code></td>
+                <td>${c.description}</td>
+                <td>$${c.amount}</td>
+                <td>${c.payer}</td>
+                <td><span class="badge ${statusBadge(c.status)}">${c.status}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function openChargeCapture() {
+  openModal('Capture Charge', `
+    <div class="form-row">
+      <div><label>Patient</label>
+        <select id="cc_pt"><option value="">Select patient...</option>${appData.patients.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>CPT Code</label>
+        <select id="cc_cpt">${CPT_CODES.map(c=>`<option value="${c.code}|${c.fee}|${c.desc}">${c.code} — ${c.desc}</option>`).join('')}</select>
+      </div>
+      <div><label>ICD-10</label>
+        <select id="cc_icd">${ICD10_COMMON.map(c=>`<option value="${c.code}">${c.code} — ${c.desc}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Payer</label><input type="text" id="cc_payer" placeholder="BlueCross BlueShield"></div>
+      <div><label>Date of Service</label><input type="date" id="cc_date" value="${new Date().toISOString().split('T')[0]}"></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <button class="btn btn-ghost btn-sm" onclick="openAiCodeSuggest()">✦ AI Code Suggest</button>
+    </div>
+    <div id="ai_code_result" class="ai-box hidden"><div class="ai-box-title">✦ AI Code Suggestion</div><div id="ai_code_text" class="ai-result"></div></div>
+    <button class="btn btn-teal w-full" style="margin-top:12px" onclick="saveCharge()">Submit Charge</button>`);
+}
+
+function openAiCodeSuggest() {
+  const desc = prompt('Describe the visit briefly (e.g. "Established patient, complex medication adjustment for Parkinson\'s, 30 min"):');
+  if (!desc) return;
+  runAiCodeSuggest(desc);
+}
+
+async function runAiCodeSuggest(desc) {
+  const key = getApiKey();
+  if (!key) { alert('Enter your Anthropic API key in Settings first.'); return; }
+  const box = document.getElementById('ai_code_result');
+  box.classList.remove('hidden');
+  document.getElementById('ai_code_text').innerHTML = '<div class="ai-spinner"><div class="spinner"></div>Analyzing...</div>';
+  const prompt = `You are a neurology billing specialist. Suggest the most appropriate CPT code and ICD-10 code for this visit description. Reply concisely in 3-4 lines: CPT code + reason, ICD-10 code + reason.
+
+Visit: ${desc}`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:200, messages:[{ role:'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    document.getElementById('ai_code_text').textContent = data.content[0].text;
+  } catch(e) {
+    document.getElementById('ai_code_text').textContent = 'Error: ' + e.message;
+  }
+}
+
+function saveCharge() {
+  const ptId = document.getElementById('cc_pt').value;
+  if (!ptId) { alert('Select a patient.'); return; }
+  const pt = appData.patients.find(p => p.id === ptId);
+  const cptRaw = document.getElementById('cc_cpt').value.split('|');
+  const charge = {
+    id: 'c' + Date.now(), patientId: ptId, patientName: pt.name,
+    date: document.getElementById('cc_date').value,
+    cpt: cptRaw[0], amount: parseFloat(cptRaw[1]),
+    description: cptRaw[2],
+    icd10: document.getElementById('cc_icd').value,
+    payer: document.getElementById('cc_payer').value || 'Self-pay',
+    status: 'Submitted'
+  };
+  appData.charges.unshift(charge);
+  appData.activity.unshift({ text:`Charge submitted: ${pt.name} (${charge.cpt})`, time: charge.date + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  closeModal();
+  renderBilling();
+}
+
+// ════════════════════════════════════════════════
+//  MESSAGING
+// ════════════════════════════════════════════════
+function renderMessaging() {
+  const activeThread = state.msgThread ? appData.messages.find(m => m.id === state.msgThread) : appData.messages[0];
+  if (activeThread) { state.msgThread = activeThread.id; activeThread.unread = false; saveData(); updateMsgBadge(); }
+
+  document.getElementById('topbarActions').innerHTML = `<button class="btn btn-teal btn-sm" onclick="newMsgThread()">+ New Message</button>`;
+  document.getElementById('content').innerHTML = `
+    <div class="msg-layout">
+      <div class="msg-threads">
+        ${appData.messages.map(m => `
+          <div class="msg-thread-item ${m.id === state.msgThread ? 'active' : ''}" onclick="selectThread('${m.id}')">
+            ${m.unread ? '<div class="msg-unread"></div>' : ''}
+            <div class="msg-thread-name">${m.patientName}</div>
+            <div class="msg-thread-preview">${m.thread[m.thread.length-1]?.text || ''}</div>
+          </div>`).join('')}
+      </div>
+      <div class="msg-chat" style="display:flex;flex-direction:column">
+        ${activeThread ? `
+          <div class="msg-chat-header">
+            <div class="msg-chat-title">${activeThread.patientName}</div>
+            <div class="msg-chat-sub">${activeThread.condition}</div>
+          </div>
+          <div class="msg-messages" id="msgMessages">
+            ${activeThread.thread.map(msg => `
+              <div>
+                <div class="msg-bubble ${msg.sender === 'doctor' ? 'outbound' : 'inbound'}">
+                  <div class="msg-sender">${msg.name}</div>
+                  ${msg.text}
+                  <div class="msg-time">${msg.time}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="msg-compose">
+            <textarea id="msgInput" placeholder="Type a message..."></textarea>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <button class="btn btn-teal btn-sm" onclick="sendMsg('${activeThread.id}')">Send</button>
+              <button class="btn btn-ghost btn-sm" onclick="aiReply('${activeThread.id}')">✦ AI</button>
+            </div>
+          </div>` : '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#6B7280">No messages</div>'}
+      </div>
+    </div>`;
+  const msgs = document.getElementById('msgMessages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+function selectThread(id) { state.msgThread = id; renderMessaging(); }
+
+function sendMsg(threadId) {
+  const text = document.getElementById('msgInput').value.trim();
+  if (!text) return;
+  const thread = appData.messages.find(m => m.id === threadId);
+  if (!thread) return;
+  thread.thread.push({ sender:'doctor', name:'Dr. Harmon', text, time: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  renderMessaging();
+}
+
+async function aiReply(threadId) {
+  const key = getApiKey();
+  if (!key) { alert('Enter your Anthropic API key in Settings first.'); return; }
+  const thread = appData.messages.find(m => m.id === threadId);
+  if (!thread) return;
+  const last3 = thread.thread.slice(-3).map(m => `${m.name}: ${m.text}`).join('\n');
+  const prompt = `You are Dr. Michael Harmon, a neurologist. Draft a brief, professional patient message reply. Patient condition: ${thread.condition}. Recent messages:\n${last3}\n\nWrite a concise, helpful reply (2-4 sentences):`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:200, messages:[{ role:'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    const input = document.getElementById('msgInput');
+    if (input) input.value = data.content[0].text;
+  } catch(e) { alert('AI error: ' + e.message); }
+}
+
+function newMsgThread() {
+  openModal('New Patient Message', `
+    <div class="form-row">
+      <div><label>Patient</label>
+        <select id="nm_pt"><option value="">Select patient...</option>${appData.patients.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-row"><div><label>Message</label><textarea id="nm_msg" rows="4"></textarea></div></div>
+    <button class="btn btn-teal w-full" onclick="createThread()">Send Message</button>`);
+}
+
+function createThread() {
+  const ptId = document.getElementById('nm_pt').value;
+  if (!ptId) { alert('Select a patient.'); return; }
+  const pt = appData.patients.find(p => p.id === ptId);
+  const text = document.getElementById('nm_msg').value.trim();
+  if (!text) { alert('Enter a message.'); return; }
+  const thread = {
+    id: 'm' + Date.now(), patientId: ptId, patientName: pt.name, condition: pt.diagnosis, unread: false,
+    thread: [{ sender:'doctor', name:'Dr. Harmon', text, time: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0,5) }]
+  };
+  appData.messages.unshift(thread);
+  saveData();
+  closeModal();
+  state.msgThread = thread.id;
+  renderMessaging();
+}
+
+// ════════════════════════════════════════════════
+//  NEURODIAGNOSTICS
+// ════════════════════════════════════════════════
+function renderDiagnostics() {
+  document.getElementById('topbarActions').innerHTML = `<button class="btn btn-teal btn-sm" onclick="openAddDiag()">+ Add Study</button>`;
+  const tab = state.diagTab;
+
+  const eegFindings = ['Normal','Abnormal-Focal','Abnormal-Generalized','Sleep-Abnormal'];
+  const eegBadge = f => ({ 'Normal':'badge-green','Abnormal-Focal':'badge-yellow','Abnormal-Generalized':'badge-red','Sleep-Abnormal':'badge-yellow' }[f]||'badge-gray');
+  const emgBadge = f => f === 'Normal' ? 'badge-green' : 'badge-red';
+
+  document.getElementById('content').innerHTML = `
+    <div class="diag-tabs">
+      <div class="diag-tab ${tab==='eeg'?'active':''}" onclick="switchDiagTab('eeg')">EEG</div>
+      <div class="diag-tab ${tab==='emg'?'active':''}" onclick="switchDiagTab('emg')">EMG / NCS</div>
+      <div class="diag-tab ${tab==='imaging'?'active':''}" onclick="switchDiagTab('imaging')">Imaging</div>
+    </div>
+
+    ${tab === 'eeg' ? `
+      <div class="card">
+        <div class="card-title">EEG Log <span class="text-muted text-sm" style="font-weight:400">${appData.diagnostics.eeg.length} studies</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Patient</th><th>Indication</th><th>Technician</th><th>Findings</th><th>Summary</th><th></th></tr></thead>
+            <tbody>
+              ${appData.diagnostics.eeg.map(e => `
+                <tr>
+                  <td>${e.date}</td><td>${e.patientName}</td><td>${e.indication}</td><td>${e.technician}</td>
+                  <td><span class="badge ${eegBadge(e.findings)}">${e.findings}</span></td>
+                  <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.summary}</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="viewDiagDetail('eeg','${e.id}')">View</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>` : ''}
+
+    ${tab === 'emg' ? `
+      <div class="card">
+        <div class="card-title">EMG / NCS Log <span class="text-muted text-sm" style="font-weight:400">${appData.diagnostics.emg.length} studies</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Patient</th><th>Indication</th><th>Technician</th><th>Results</th><th>Summary</th><th></th></tr></thead>
+            <tbody>
+              ${appData.diagnostics.emg.map(e => `
+                <tr>
+                  <td>${e.date}</td><td>${e.patientName}</td><td>${e.indication}</td><td>${e.technician}</td>
+                  <td><span class="badge ${emgBadge(e.findings)}">${e.findings}</span></td>
+                  <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.summary}</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="viewDiagDetail('emg','${e.id}')">View</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>` : ''}
+
+    ${tab === 'imaging' ? `
+      <div class="card">
+        <div class="card-title">Imaging Log <span class="text-muted text-sm" style="font-weight:400">${appData.diagnostics.imaging.length} studies</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Patient</th><th>Modality</th><th>Indication</th><th>Findings</th><th></th></tr></thead>
+            <tbody>
+              ${appData.diagnostics.imaging.map(e => `
+                <tr>
+                  <td>${e.date}</td><td>${e.patientName}</td>
+                  <td><span class="badge badge-teal">${e.modality}</span></td>
+                  <td>${e.indication}</td>
+                  <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.findings}</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="viewDiagDetail('imaging','${e.id}')">View</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>` : ''}`;
+}
+
+function switchDiagTab(tab) { state.diagTab = tab; renderDiagnostics(); }
+
+function viewDiagDetail(type, id) {
+  const study = appData.diagnostics[type].find(x => x.id === id);
+  if (!study) return;
+  const titleMap = { eeg:'EEG Report', emg:'EMG / NCS Report', imaging:'Imaging Report' };
+  openModal(titleMap[type], `
+    <div class="form-row form-row-2">
+      <div><label>Patient</label><div style="font-weight:600">${study.patientName}</div></div>
+      <div><label>Date</label><div>${study.date}</div></div>
+    </div>
+    ${type === 'imaging' ? `
+      <div class="form-row"><div><label>Modality</label><div>${study.modality}</div></div></div>` : `
+      <div class="form-row"><div><label>Technician</label><div>${study.technician}</div></div></div>`}
+    <div class="form-row"><div><label>Indication</label><div>${study.indication}</div></div></div>
+    ${type !== 'imaging' ? `<div class="form-row"><div><label>Results</label><div><span class="badge ${study.findings === 'Normal' ? 'badge-green' : 'badge-red'}">${study.findings}</span></div></div></div>` : ''}
+    <div class="form-row"><div><label>Findings / Summary</label><div style="line-height:1.6;font-size:13px;color:#D1D5DB">${type === 'imaging' ? study.findings : study.summary}</div></div></div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="aiInterpret('${type}','${id}')">✦ AI Interpret</button>
+    <div id="ai_diag_box" class="ai-box hidden"><div class="ai-box-title">✦ AI Clinical Interpretation</div><div id="ai_diag_text" class="ai-result"></div></div>`);
+}
+
+async function aiInterpret(type, id) {
+  const key = getApiKey();
+  if (!key) { alert('Enter your Anthropic API key in Settings first.'); return; }
+  const study = appData.diagnostics[type].find(x => x.id === id);
+  if (!study) return;
+  const box = document.getElementById('ai_diag_box');
+  box.classList.remove('hidden');
+  document.getElementById('ai_diag_text').innerHTML = '<div class="ai-spinner"><div class="spinner"></div>Interpreting...</div>';
+  const raw = type === 'imaging' ? study.findings : study.summary;
+  const prompt = `You are a neurologist. Provide a brief, clinically useful interpretation of these ${type.toUpperCase()} findings for a patient with ICD-10 ${study.icd10}. Be concise (3-5 sentences). Findings: ${raw}`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:300, messages:[{ role:'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    document.getElementById('ai_diag_text').textContent = data.content[0].text;
+  } catch(e) {
+    document.getElementById('ai_diag_text').textContent = 'Error: ' + e.message;
+  }
+}
+
+function openAddDiag() {
+  const tab = state.diagTab;
+  const tabLabels = { eeg:'EEG Study', emg:'EMG / NCS Study', imaging:'Imaging Study' };
+  openModal(`Add ${tabLabels[tab]}`, `
+    <div class="form-row">
+      <div><label>Patient</label>
+        <select id="diag_pt"><option value="">Select patient...</option>${appData.patients.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-row form-row-2">
+      <div><label>Date</label><input type="date" id="diag_date" value="${new Date().toISOString().split('T')[0]}"></div>
+      ${tab === 'imaging' ?
+        `<div><label>Modality</label><select id="diag_mod"><option>MRI Brain</option><option>MRI Spine</option><option>CT Head</option><option>CT Angiography</option><option>PET Brain</option></select></div>` :
+        `<div><label>Technician</label><input type="text" id="diag_tech" value="Dr. Michael Harmon, MD"></div>`}
+    </div>
+    <div class="form-row"><div><label>Indication</label><input type="text" id="diag_ind" placeholder="Clinical indication for study..."></div></div>
+    ${tab === 'eeg' ? `<div class="form-row"><div><label>Findings</label><select id="diag_find"><option>Normal</option><option>Abnormal-Focal</option><option>Abnormal-Generalized</option><option>Sleep-Abnormal</option></select></div></div>` : ''}
+    ${tab === 'emg' ? `<div class="form-row"><div><label>Results</label><select id="diag_find"><option>Normal</option><option>Abnormal</option></select></div></div>` : ''}
+    <div class="form-row"><div><label>${tab === 'imaging' ? 'Findings' : 'Summary'}</label><textarea id="diag_summary" rows="4" placeholder="${tab === 'imaging' ? 'Radiological findings...' : 'Study summary and interpretation...'}"></textarea></div></div>
+    <button class="btn btn-teal w-full" onclick="saveDiag('${tab}')">Save Study</button>`);
+}
+
+function saveDiag(type) {
+  const ptId = document.getElementById('diag_pt').value;
+  if (!ptId) { alert('Select a patient.'); return; }
+  const pt = appData.patients.find(p => p.id === ptId);
+  const base = { id: type[0] + 'm' + Date.now(), patientId: ptId, patientName: pt.name, date: document.getElementById('diag_date').value, indication: document.getElementById('diag_ind').value, icd10: pt.icd10 };
+  if (type === 'imaging') {
+    appData.diagnostics.imaging.unshift({ ...base, modality: document.getElementById('diag_mod').value, findings: document.getElementById('diag_summary').value });
+  } else {
+    appData.diagnostics[type].unshift({ ...base, technician: document.getElementById('diag_tech').value, findings: document.getElementById('diag_find').value, summary: document.getElementById('diag_summary').value });
+  }
+  appData.activity.unshift({ text:`${type.toUpperCase()} study logged: ${pt.name}`, time: base.date + ' ' + new Date().toTimeString().slice(0,5) });
+  saveData();
+  closeModal();
+  renderDiagnostics();
+}
+
+// ════════════════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════════════════
+function renderSettings() {
+  const s = loadSettings();
+  const apiKey = getApiKey();
+  document.getElementById('topbarActions').innerHTML = '';
+  document.getElementById('content').innerHTML = `
+    <div class="settings-grid">
+      <div class="settings-card">
+        <div class="settings-card-title">Clinic Profile</div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>Clinic Name</label><input type="text" id="s_clinic" value="${s.clinicName}"></div></div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>Physician Name</label><input type="text" id="s_doc" value="${s.doctorName}"></div></div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>NPI Number</label><input type="text" id="s_npi" value="${s.npi}"></div></div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>Phone</label><input type="text" id="s_phone" value="${s.phone}"></div></div>
+        <div class="form-row" style="margin-bottom:12px"><div><label>Address</label><input type="text" id="s_addr" value="${s.address}"></div></div>
+        <button class="btn btn-teal btn-sm" onclick="saveProfile()">Save Profile</button>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">AI Configuration</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div>
+            <label>Anthropic API Key</label>
+            <input type="password" id="s_apikey" value="${apiKey}" placeholder="sk-ant-...">
+            <div class="text-muted text-sm mt-2">Used for AI note generation, code suggestions, and diagnostic interpretation.</div>
+          </div>
+        </div>
+        <button class="btn btn-teal btn-sm" onclick="saveApiKeyFromSettings()">Save Key</button>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #374151">
+          <div class="text-muted text-sm" style="margin-bottom:8px">AI Features</div>
+          <div class="badge badge-teal" style="margin:3px">✦ SOAP Note Generation</div>
+          <div class="badge badge-teal" style="margin:3px">✦ CPT/ICD-10 Suggestions</div>
+          <div class="badge badge-teal" style="margin:3px">✦ Diagnostic Interpretation</div>
+          <div class="badge badge-teal" style="margin:3px">✦ Patient Message Replies</div>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Security</div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>Current Password</label><input type="password" id="s_oldpw" placeholder="Current password"></div></div>
+        <div class="form-row" style="margin-bottom:10px"><div><label>New Password</label><input type="password" id="s_newpw" placeholder="New password"></div></div>
+        <div class="form-row" style="margin-bottom:12px"><div><label>Confirm New Password</label><input type="password" id="s_confirmpw" placeholder="Confirm new password"></div></div>
+        <button class="btn btn-teal btn-sm" onclick="changePassword()">Change Password</button>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Data</div>
+        <div class="text-muted text-sm" style="margin-bottom:16px">All data is stored locally in your browser. Export a JSON backup at any time.</div>
+        <button class="btn btn-ghost btn-sm" style="margin-bottom:10px" onclick="exportData()">Export Data (JSON)</button>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #374151">
+          <div class="text-muted text-sm" style="margin-bottom:8px">Storage Overview</div>
+          <div style="font-size:13px">Patients: <strong>${appData.patients.length}</strong></div>
+          <div style="font-size:13px">Appointments: <strong>${appData.appointments.length}</strong></div>
+          <div style="font-size:13px">Notes: <strong>${appData.notes.length}</strong></div>
+          <div style="font-size:13px">Claims: <strong>${appData.charges.length}</strong></div>
+          <div style="font-size:13px">Messages: <strong>${appData.messages.length}</strong></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveProfile() {
+  const s = { clinicName: document.getElementById('s_clinic').value, doctorName: document.getElementById('s_doc').value, npi: document.getElementById('s_npi').value, phone: document.getElementById('s_phone').value, address: document.getElementById('s_addr').value };
+  saveSettings(s);
+  document.querySelector('.sidebar-clinic-name').textContent = s.clinicName;
+  document.querySelector('.sidebar-clinic-doc').textContent = s.doctorName;
+  alert('Profile saved.');
+}
+
+function saveApiKeyFromSettings() {
+  saveApiKey(document.getElementById('s_apikey').value.trim());
+  alert('API key saved.');
+}
+
+function changePassword() {
+  const oldPw = document.getElementById('s_oldpw').value;
+  const stored = localStorage.getItem(PW_KEY) || DEFAULT_PW;
+  if (btoa(oldPw) !== stored) { alert('Current password incorrect.'); return; }
+  const newPw = document.getElementById('s_newpw').value;
+  const confirmPw = document.getElementById('s_confirmpw').value;
+  if (newPw !== confirmPw) { alert('Passwords do not match.'); return; }
+  if (newPw.length < 6) { alert('Password must be at least 6 characters.'); return; }
+  localStorage.setItem(PW_KEY, btoa(newPw));
+  alert('Password changed successfully.');
+  document.getElementById('s_oldpw').value = '';
+  document.getElementById('s_newpw').value = '';
+  document.getElementById('s_confirmpw').value = '';
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(appData, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'neuroflow-data-' + new Date().toISOString().split('T')[0] + '.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+document.getElementById('loginPw').focus();
+</script>
+</body>
+</html>
