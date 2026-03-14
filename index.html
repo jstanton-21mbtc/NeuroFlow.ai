@@ -1797,9 +1797,10 @@ async function generateNoteFromVoice() {
   let transcript = _voiceFinalText.trim();
   if (!transcript) {
     const box = document.getElementById('voiceTranscript');
-    transcript = box ? box.innerText.trim() : '';
+    transcript = box ? (box.innerText || box.textContent || '').trim() : '';
   }
-  if (!transcript || transcript === 'Your dictation will appear here in real time...') {
+  const placeholder = 'Your dictation will appear here in real time...';
+  if (!transcript || transcript === placeholder) {
     alert('No dictation recorded yet. Click the mic and speak first.'); return;
   }
 
@@ -1807,22 +1808,26 @@ async function generateNoteFromVoice() {
   stopRecording();
 
   const pt = ptId ? appData.patients.find(p => p.id === ptId) : null;
-  const box = document.getElementById('voice_gen_result');
-  const txt = document.getElementById('voice_gen_text');
-  box.classList.remove('hidden');
+  const resultBox = document.getElementById('voice_gen_result');
+  const txt       = document.getElementById('voice_gen_text');
+  resultBox.classList.remove('hidden');
   txt.innerHTML = '<div class="ai-spinner"><div class="spinner"></div>Analyzing dictation and generating SOAP note...</div>';
 
-  const prompt = `You are an expert neurology clinical documentation specialist. A neurologist has dictated the following notes during or after a patient visit. Convert this raw dictation into a complete, professional SOAP note.
+  // Disable generate button while running to prevent double-submission
+  const genBtn = document.getElementById('voiceGenerateBtn');
+  if (genBtn) { genBtn.disabled = true; genBtn.style.opacity = '.6'; }
 
-${pt ? `Patient: ${pt.name}, ${pt.age}y/o ${pt.sex}, Diagnosis: ${pt.diagnosis}` : 'Patient not specified'}
+  const patientCtx = pt
+    ? `Patient: ${pt.name}, ${pt.age}y/o ${pt.sex}, Diagnosis: ${pt.diagnosis}${pt.medications?.length ? '\nCurrent Medications: ' + pt.medications.join(', ') : ''}${pt.allergies ? '\nAllergies: ' + pt.allergies : ''}`
+    : 'Patient not specified';
+
+  const prompt = `You are an expert neurology clinical documentation specialist. Convert the physician dictation below into a complete, professional SOAP note.
+
+${patientCtx}
 Template: ${tpl}
-${pt && pt.medications?.length ? `Current Medications: ${pt.medications.join(', ')}` : ''}
-${pt && pt.allergies ? `Allergies: ${pt.allergies}` : ''}
 
 Physician Dictation:
-"${transcript}"
-
-Generate a complete, professional SOAP note. Fill in clinical details appropriately based on the dictation and the template type. If the dictation doesn't cover a section, use clinically appropriate placeholder text.
+${transcript}
 
 Output EXACTLY in this format (no extra text before or after):
 S: [subjective — patient history, symptoms, complaints as reported]
@@ -1830,18 +1835,55 @@ O: [objective — vital signs, physical exam findings, test results mentioned]
 A: [assessment — diagnosis, clinical impression, problem list]
 P: [plan — medications, follow-up, referrals, orders, patient instructions]`;
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 45000);
+
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-calls': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+      signal: controller.signal,
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
     });
+    clearTimeout(timeout);
+
     const data = await resp.json();
+
+    if (!resp.ok) {
+      const msg = data?.error?.message || `API error ${resp.status}`;
+      throw new Error(msg);
+    }
+    if (!data.content || !data.content[0]) {
+      throw new Error('Empty response from API');
+    }
+
     const result = data.content[0].text;
     txt.textContent = result;
     window._voiceNoteText = result;
+
+    // Re-enable generate button for potential re-generation
+    if (genBtn) { genBtn.disabled = false; genBtn.style.opacity = '1'; genBtn.style.cursor = 'pointer'; }
+
   } catch(e) {
-    txt.textContent = 'Error: ' + e.message;
+    clearTimeout(timeout);
+    const isAbort   = e.name === 'AbortError';
+    const isFetch   = e.message === 'Failed to fetch';
+    let msg = e.message;
+    if (isAbort)  msg = 'Request timed out (45s). Check your connection and try again.';
+    if (isFetch)  msg = 'Network error — could not reach the AI service. Check your internet connection and try again.';
+    txt.innerHTML = `
+      <div style="color:#EF4444;margin-bottom:10px">⚠ ${msg}</div>
+      <button class="btn btn-teal btn-sm" onclick="generateNoteFromVoice()">Retry</button>
+      <div style="margin-top:10px;font-size:12px;color:#64748B">
+        Your transcript is preserved. You can also copy it and paste into <strong>✦ AI Assist</strong>.
+      </div>`;
+    // Always re-enable the generate button after error
+    if (genBtn) { genBtn.disabled = false; genBtn.style.opacity = '1'; genBtn.style.cursor = 'pointer'; }
   }
 }
 
