@@ -6,169 +6,201 @@
 <title>NeuroFlow.ai</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#111827;color:#F9FAFB;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh;font-size:14px}
 /* ── LOGIN ── */
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111827}
-.login-box{background:#1F2937;border:1px solid #374151;border-radius:16px;padding:48px 40px;width:380px;text-align:center}
-.login-logo{width:64px;height:64px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.login-logo svg{width:36px;height:36px}
-.login-box h1{font-size:24px;font-weight:700;color:#F9FAFB;margin-bottom:4px}
-.login-box p{color:#9CA3AF;font-size:13px;margin-bottom:32px}
-.login-box input{width:100%;padding:12px 16px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:14px;outline:none;margin-bottom:12px}
-.login-box input:focus{border-color:#0D9488}
-.btn-primary{width:100%;padding:12px;background:#0D9488;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
-.btn-primary:hover{background:#0F766E}
-.login-hint{margin-top:16px;font-size:12px;color:#6B7280}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#F0FDFA 0%,#E0F2FE 50%,#F1F5F9 100%)}
+.login-box{background:#fff;border:1px solid #E2E8F0;border-radius:20px;padding:48px 40px;width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.08)}
+.login-logo{width:68px;height:68px;background:linear-gradient(135deg,#0D9488,#0891B2);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 20px rgba(13,148,136,.25)}
+.login-logo svg{width:38px;height:38px}
+.login-box h1{font-size:26px;font-weight:800;color:#0F172A;margin-bottom:4px;letter-spacing:-.5px}
+.login-box .login-sub{color:#64748B;font-size:13px;margin-bottom:8px}
+.login-clinic{font-size:12px;font-weight:600;color:#0D9488;background:#F0FDFA;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:28px}
+.login-box input{width:100%;padding:12px 16px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;color:#0F172A;font-size:14px;outline:none;margin-bottom:12px;transition:border-color .15s}
+.login-box input:focus{border-color:#0D9488;background:#fff}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#0D9488,#0891B2);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.01em}
+.btn-primary:hover{opacity:.9}
+.login-hint{margin-top:16px;font-size:12px;color:#94A3B8}
 /* ── LAYOUT ── */
 #app{display:none;height:100vh;overflow:hidden;flex-direction:row}
 #app.visible{display:flex}
-/* SIDEBAR */
-#sidebar{width:220px;background:#1F2937;border-right:1px solid #374151;display:flex;flex-direction:column;flex-shrink:0}
-.sidebar-brand{padding:20px 16px 12px;border-bottom:1px solid #374151;display:flex;align-items:center;gap:10px}
-.brand-icon{width:36px;height:36px;background:#0D9488;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.brand-icon svg{width:20px;height:20px}
-.brand-name{font-size:16px;font-weight:700;color:#F9FAFB}
-.brand-sub{font-size:10px;color:#6B7280;margin-top:1px}
-.sidebar-clinic{padding:12px 16px;border-bottom:1px solid #374151}
-.sidebar-clinic-name{font-size:12px;font-weight:600;color:#0D9488}
-.sidebar-clinic-doc{font-size:11px;color:#9CA3AF}
-nav{flex:1;padding:8px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-left:3px solid transparent;color:#9CA3AF;font-size:13px;font-weight:500;transition:all .15s;user-select:none}
-.nav-item:hover{color:#F9FAFB;background:#374151}
-.nav-item.active{color:#0D9488;border-left-color:#0D9488;background:rgba(13,148,136,.08)}
-.nav-item svg{width:16px;height:16px;flex-shrink:0}
-.sidebar-bottom{padding:12px 16px;border-top:1px solid #374151}
-.sidebar-logout{display:flex;align-items:center;gap:8px;color:#6B7280;font-size:12px;cursor:pointer;padding:8px;border-radius:6px}
-.sidebar-logout:hover{color:#F9FAFB;background:#374151}
-/* MAIN */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#topbar{background:#1F2937;border-bottom:1px solid #374151;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.topbar-title{font-size:18px;font-weight:700;color:#F9FAFB}
-.topbar-actions{display:flex;align-items:center;gap:10px}
+/* ── SIDEBAR ── */
+#sidebar{width:228px;background:#fff;border-right:1px solid #E2E8F0;display:flex;flex-direction:column;flex-shrink:0;box-shadow:1px 0 0 #E2E8F0}
+.sidebar-brand{padding:18px 16px 14px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:10px}
+.brand-icon{width:34px;height:34px;background:linear-gradient(135deg,#0D9488,#0891B2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(13,148,136,.2)}
+.brand-icon svg{width:18px;height:18px}
+.brand-name{font-size:15px;font-weight:800;color:#0F172A;letter-spacing:-.3px}
+.brand-sub{font-size:10px;color:#94A3B8;margin-top:1px;letter-spacing:.05em;text-transform:uppercase}
+.sidebar-clinic{padding:10px 16px 12px;border-bottom:1px solid #F1F5F9}
+.sidebar-clinic-name{font-size:11.5px;font-weight:700;color:#0D9488}
+.sidebar-clinic-doc{font-size:11px;color:#94A3B8;margin-top:1px}
+nav{flex:1;padding:6px 8px;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:700;color:#CBD5E1;letter-spacing:.08em;text-transform:uppercase;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;cursor:pointer;border-radius:8px;color:#64748B;font-size:13px;font-weight:500;transition:all .12s;user-select:none;margin-bottom:1px}
+.nav-item:hover{color:#0F172A;background:#F1F5F9}
+.nav-item.active{color:#0D9488;background:#F0FDFA;font-weight:600}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.8}
+.nav-item.active svg{opacity:1}
+.sidebar-bottom{padding:10px 8px 12px;border-top:1px solid #F1F5F9}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin-bottom:6px}
+.sidebar-avatar{width:32px;height:32px;background:linear-gradient(135deg,#0D9488,#0891B2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.sidebar-user-name{font-size:12px;font-weight:600;color:#0F172A}
+.sidebar-user-role{font-size:10px;color:#94A3B8}
+.sidebar-logout{display:flex;align-items:center;gap:8px;color:#94A3B8;font-size:12px;cursor:pointer;padding:8px 10px;border-radius:8px;font-weight:500}
+.sidebar-logout:hover{color:#EF4444;background:#FEF2F2}
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F1F5F9}
+/* TOP BAR */
+#topbar{background:#fff;border-bottom:1px solid #E2E8F0;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;height:60px}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-breadcrumb{font-size:11px;color:#94A3B8;font-weight:500}
+.topbar-title{font-size:17px;font-weight:700;color:#0F172A;letter-spacing:-.3px}
+.topbar-search{display:flex;align-items:center;gap:8px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:7px 12px;width:240px}
+.topbar-search svg{color:#94A3B8;width:14px;height:14px;flex-shrink:0}
+.topbar-search input{background:none;border:none;outline:none;font-size:13px;color:#0F172A;width:100%}
+.topbar-search input::placeholder{color:#94A3B8}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.topbar-avatar{width:32px;height:32px;background:linear-gradient(135deg,#0D9488,#0891B2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer}
 #content{flex:1;overflow-y:auto;padding:24px}
-/* ── CARDS & GRIDS ── */
+/* ── STAT CARDS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px}
-.stat-label{font-size:12px;color:#9CA3AF;margin-bottom:6px}
-.stat-value{font-size:28px;font-weight:700;color:#F9FAFB}
-.stat-sub{font-size:11px;color:#6B7280;margin-top:4px}
+.stat-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.stat-icon.teal{background:#F0FDFA}
+.stat-icon.blue{background:#EFF6FF}
+.stat-icon.amber{background:#FFFBEB}
+.stat-icon.red{background:#FEF2F2}
+.stat-label{font-size:12px;color:#64748B;font-weight:500;margin-bottom:4px}
+.stat-value{font-size:28px;font-weight:800;color:#0F172A;letter-spacing:-.5px}
+.stat-sub{font-size:11px;color:#94A3B8;margin-top:3px}
 .stat-card.accent .stat-value{color:#0D9488}
-.card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px;margin-bottom:16px}
-.card-title{font-size:14px;font-weight:600;color:#F9FAFB;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-title{font-size:14px;font-weight:700;color:#0F172A;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 /* ── BUTTONS ── */
-.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:background .15s}
-.btn-teal{background:#0D9488;color:#fff}.btn-teal:hover{background:#0F766E}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;letter-spacing:.01em}
+.btn-teal{background:#0D9488;color:#fff;box-shadow:0 1px 3px rgba(13,148,136,.3)}.btn-teal:hover{background:#0F766E}
 .btn-sm{padding:6px 12px;font-size:12px}
-.btn-ghost{background:transparent;border:1px solid #374151;color:#9CA3AF}.btn-ghost:hover{color:#F9FAFB;border-color:#6B7280}
-.btn-red{background:#DC2626;color:#fff}.btn-red:hover{background:#B91C1C}
-.btn-green{background:#059669;color:#fff}.btn-green:hover{background:#047857}
+.btn-ghost{background:#fff;border:1px solid #E2E8F0;color:#64748B}.btn-ghost:hover{border-color:#CBD5E1;color:#0F172A;background:#F8FAFC}
+.btn-red{background:#EF4444;color:#fff}.btn-red:hover{background:#DC2626}
+.btn-green{background:#10B981;color:#fff}.btn-green:hover{background:#059669}
 /* ── BADGES ── */
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
-.badge-teal{background:rgba(13,148,136,.15);color:#0D9488}
-.badge-green{background:rgba(5,150,105,.15);color:#10B981}
-.badge-yellow{background:rgba(245,158,11,.15);color:#F59E0B}
-.badge-red{background:rgba(220,38,38,.15);color:#EF4444}
-.badge-gray{background:rgba(107,114,128,.15);color:#9CA3AF}
+.badge-teal{background:#F0FDFA;color:#0D9488;border:1px solid #CCFBF1}
+.badge-green{background:#F0FDF4;color:#059669;border:1px solid #BBF7D0}
+.badge-yellow{background:#FFFBEB;color:#D97706;border:1px solid #FDE68A}
+.badge-red{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.badge-gray{background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0}
+.badge-blue{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE}
 /* ── TABLES ── */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 12px;color:#6B7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #374151}
-td{padding:10px 12px;border-bottom:1px solid #1F2937;color:#D1D5DB;vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,.02)}
+thead{background:#F8FAFC}
+th{text-align:left;padding:10px 14px;color:#64748B;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0}
+td{padding:11px 14px;border-bottom:1px solid #F1F5F9;color:#374151;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFC}
 /* ── FORMS ── */
 .form-row{display:grid;gap:12px;margin-bottom:12px}
 .form-row-2{grid-template-columns:1fr 1fr}
 .form-row-3{grid-template-columns:1fr 1fr 1fr}
-label{display:block;font-size:12px;color:#9CA3AF;margin-bottom:4px;font-weight:500}
-input[type=text],input[type=email],input[type=date],input[type=tel],input[type=password],input[type=number],select,textarea{width:100%;padding:9px 12px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;outline:none;font-family:inherit}
-input:focus,select:focus,textarea:focus{border-color:#0D9488}
-select option{background:#1F2937}
+label{display:block;font-size:12px;color:#64748B;margin-bottom:5px;font-weight:600;letter-spacing:.01em}
+input[type=text],input[type=email],input[type=date],input[type=tel],input[type=password],input[type=number],select,textarea{width:100%;padding:9px 12px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;color:#0F172A;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:#0D9488;background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.08)}
+select option{background:#fff}
 textarea{resize:vertical;min-height:80px}
 /* ── PATIENT LIST ── */
-.patient-list{display:flex;flex-direction:column;gap:2px}
-.patient-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;cursor:pointer;border:1px solid transparent}
-.patient-row:hover{background:#374151}
-.patient-row.selected{background:rgba(13,148,136,.1);border-color:#0D9488}
-.patient-avatar{width:36px;height:36px;background:#0D9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.patient-name{font-size:14px;font-weight:600;color:#F9FAFB}
-.patient-meta{font-size:11px;color:#9CA3AF}
+.patient-list{display:flex;flex-direction:column;gap:1px}
+.patient-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;transition:all .12s}
+.patient-row:hover{background:#F8FAFC;border-color:#E2E8F0}
+.patient-row.selected{background:#F0FDFA;border-color:#0D9488}
+.patient-avatar{width:36px;height:36px;background:linear-gradient(135deg,#0D9488,#0891B2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 2px 6px rgba(13,148,136,.2)}
+.patient-name{font-size:13px;font-weight:600;color:#0F172A}
+.patient-meta{font-size:11px;color:#94A3B8;margin-top:1px}
 /* ── SCHEDULING ── */
-.sched-grid{display:grid;grid-template-columns:60px repeat(5,1fr);border:1px solid #374151;border-radius:10px;overflow:hidden;font-size:12px}
-.sched-header{background:#374151;padding:8px;text-align:center;font-weight:600;color:#F9FAFB;border-bottom:1px solid #4B5563}
-.sched-time{background:#1A2332;padding:6px 8px;color:#6B7280;text-align:right;border-bottom:1px solid #374151;border-right:1px solid #374151;font-size:11px}
-.sched-slot{min-height:32px;border-bottom:1px solid #1F2937;border-right:1px solid #374151;padding:2px;cursor:pointer;transition:background .1s}
-.sched-slot:hover{background:rgba(13,148,136,.08)}
+.sched-grid{display:grid;grid-template-columns:56px repeat(5,1fr);border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;font-size:12px;background:#fff}
+.sched-header{background:#F8FAFC;padding:10px 8px;text-align:center;font-weight:700;color:#374151;border-bottom:1px solid #E2E8F0;font-size:12px}
+.sched-time{background:#FAFBFC;padding:5px 8px;color:#94A3B8;text-align:right;border-bottom:1px solid #F1F5F9;border-right:1px solid #E2E8F0;font-size:11px;font-weight:500}
+.sched-slot{min-height:30px;border-bottom:1px solid #F1F5F9;border-right:1px solid #E2E8F0;padding:2px;cursor:pointer;transition:background .1s;background:#fff}
+.sched-slot:hover{background:#F0FDFA}
 .sched-slot:last-child{border-right:none}
-.sched-appt{background:rgba(13,148,136,.2);border:1px solid #0D9488;border-radius:4px;padding:3px 6px;font-size:11px;color:#0D9488;font-weight:600;cursor:pointer}
-.sched-appt.new-pt{background:rgba(139,92,246,.2);border-color:#8B5CF6;color:#8B5CF6}
-.sched-appt.procedure{background:rgba(245,158,11,.2);border-color:#F59E0B;color:#F59E0B}
+.sched-appt{background:#F0FDFA;border:1px solid #99F6E4;border-radius:4px;padding:3px 6px;font-size:11px;color:#0D9488;font-weight:600;cursor:pointer;line-height:1.3}
+.sched-appt.new-pt{background:#F5F3FF;border-color:#DDD6FE;color:#7C3AED}
+.sched-appt.procedure{background:#FFFBEB;border-color:#FDE68A;color:#D97706}
 /* ── MESSAGING ── */
-.msg-layout{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 160px);gap:0;border:1px solid #374151;border-radius:12px;overflow:hidden}
-.msg-threads{background:#1F2937;border-right:1px solid #374151;overflow-y:auto}
-.msg-thread-item{padding:14px 16px;cursor:pointer;border-bottom:1px solid #374151}
-.msg-thread-item:hover{background:#374151}
-.msg-thread-item.active{background:rgba(13,148,136,.1);border-left:3px solid #0D9488}
-.msg-thread-name{font-size:13px;font-weight:600;color:#F9FAFB}
-.msg-thread-preview{font-size:11px;color:#6B7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.msg-unread{width:8px;height:8px;background:#0D9488;border-radius:50%;float:right;margin-top:4px}
-.msg-chat{display:flex;flex-direction:column;background:#111827}
-.msg-chat-header{padding:14px 20px;border-bottom:1px solid #374151;background:#1F2937}
-.msg-chat-title{font-size:14px;font-weight:600;color:#F9FAFB}
-.msg-chat-sub{font-size:11px;color:#9CA3AF}
+.msg-layout{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 108px);gap:0;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.msg-threads{background:#fff;border-right:1px solid #E2E8F0;overflow-y:auto}
+.msg-threads-header{padding:14px 16px;border-bottom:1px solid #F1F5F9;font-size:13px;font-weight:700;color:#0F172A}
+.msg-thread-item{padding:13px 16px;cursor:pointer;border-bottom:1px solid #F1F5F9;transition:background .12s}
+.msg-thread-item:hover{background:#F8FAFC}
+.msg-thread-item.active{background:#F0FDFA;border-left:3px solid #0D9488}
+.msg-thread-name{font-size:13px;font-weight:600;color:#0F172A}
+.msg-thread-preview{font-size:11px;color:#94A3B8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-unread{width:7px;height:7px;background:#0D9488;border-radius:50%;float:right;margin-top:5px}
+.msg-chat{display:flex;flex-direction:column;background:#F8FAFC}
+.msg-chat-header{padding:14px 20px;border-bottom:1px solid #E2E8F0;background:#fff;display:flex;align-items:center;gap:10px}
+.msg-chat-title{font-size:14px;font-weight:700;color:#0F172A}
+.msg-chat-sub{font-size:11px;color:#94A3B8}
 .msg-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.msg-bubble{max-width:70%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5}
-.msg-bubble.inbound{background:#1F2937;border:1px solid #374151;color:#D1D5DB;align-self:flex-start}
-.msg-bubble.outbound{background:#0D9488;color:#fff;align-self:flex-end}
-.msg-bubble .msg-sender{font-size:10px;font-weight:600;margin-bottom:4px;opacity:.7}
+.msg-bubble{max-width:68%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.55}
+.msg-bubble.inbound{background:#fff;border:1px solid #E2E8F0;color:#374151;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.msg-bubble.outbound{background:#0D9488;color:#fff;align-self:flex-end;box-shadow:0 2px 6px rgba(13,148,136,.25)}
+.msg-bubble .msg-sender{font-size:10px;font-weight:700;margin-bottom:4px;opacity:.7;text-transform:uppercase;letter-spacing:.04em}
 .msg-bubble .msg-time{font-size:10px;margin-top:4px;opacity:.6;text-align:right}
-.msg-compose{padding:14px 20px;border-top:1px solid #374151;background:#1F2937;display:flex;gap:8px}
-.msg-compose textarea{flex:1;padding:10px 12px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;resize:none;height:70px;outline:none;font-family:inherit}
+.msg-compose{padding:12px 16px;border-top:1px solid #E2E8F0;background:#fff;display:flex;gap:8px}
+.msg-compose textarea{flex:1;padding:10px 12px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;color:#0F172A;font-size:13px;resize:none;height:66px;outline:none;font-family:inherit}
 .msg-compose textarea:focus{border-color:#0D9488}
 /* ── DIAGNOSTICS ── */
-.diag-tabs{display:flex;gap:2px;margin-bottom:16px;background:#374151;border-radius:8px;padding:3px}
-.diag-tab{flex:1;padding:8px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:#9CA3AF;transition:all .15s}
-.diag-tab.active{background:#0D9488;color:#fff}
+.diag-tabs{display:flex;gap:2px;margin-bottom:16px;background:#F1F5F9;border-radius:10px;padding:3px}
+.diag-tab{flex:1;padding:8px;text-align:center;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#64748B;transition:all .15s}
+.diag-tab.active{background:#fff;color:#0D9488;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center}
-.modal{background:#1F2937;border:1px solid #374151;border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:17px;font-weight:700;color:#F9FAFB;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
-.modal-close{cursor:pointer;color:#6B7280;font-size:20px;line-height:1}
-.modal-close:hover{color:#F9FAFB}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center}
+.modal{background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:28px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.15)}
+.modal-title{font-size:17px;font-weight:800;color:#0F172A;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;letter-spacing:-.3px}
+.modal-close{cursor:pointer;color:#94A3B8;font-size:18px;line-height:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .12s}
+.modal-close:hover{color:#0F172A;background:#F1F5F9}
 /* ── AI BOX ── */
-.ai-box{background:#111827;border:1px solid #0D9488;border-radius:10px;padding:16px;margin-top:12px}
-.ai-box-title{font-size:12px;font-weight:600;color:#0D9488;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.ai-result{font-size:13px;color:#D1D5DB;line-height:1.6;white-space:pre-wrap}
-.ai-spinner{display:flex;align-items:center;gap:8px;color:#9CA3AF;font-size:13px}
-.spinner{width:16px;height:16px;border:2px solid #374151;border-top-color:#0D9488;border-radius:50%;animation:spin .7s linear infinite}
+.ai-box{background:#F0FDFA;border:1.5px solid #99F6E4;border-radius:10px;padding:16px;margin-top:12px}
+.ai-box-title{font-size:12px;font-weight:700;color:#0D9488;margin-bottom:8px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.05em}
+.ai-result{font-size:13px;color:#374151;line-height:1.65;white-space:pre-wrap}
+.ai-spinner{display:flex;align-items:center;gap:8px;color:#64748B;font-size:13px}
+.spinner{width:16px;height:16px;border:2px solid #E2E8F0;border-top-color:#0D9488;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* ── SEARCH ── */
-.search-bar{width:100%;padding:9px 12px 9px 36px;background:#111827;border:1px solid #374151;border-radius:8px;color:#F9FAFB;font-size:13px;outline:none}
-.search-bar:focus{border-color:#0D9488}
+.search-bar{width:100%;padding:9px 12px 9px 36px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;color:#0F172A;font-size:13px;outline:none;transition:border-color .15s}
+.search-bar:focus{border-color:#0D9488;background:#fff}
 .search-wrap{position:relative;margin-bottom:16px}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6B7280;width:14px;height:14px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;width:14px;height:14px}
 /* ── ACTIVITY FEED ── */
-.activity-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #374151}
+.activity-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #F1F5F9}
 .activity-item:last-child{border-bottom:none}
-.activity-dot{width:8px;height:8px;background:#0D9488;border-radius:50%;margin-top:5px;flex-shrink:0}
-.activity-text{font-size:13px;color:#D1D5DB}
-.activity-time{font-size:11px;color:#6B7280;margin-top:2px}
+.activity-dot{width:7px;height:7px;background:#0D9488;border-radius:50%;margin-top:6px;flex-shrink:0}
+.activity-text{font-size:13px;color:#374151}
+.activity-time{font-size:11px;color:#94A3B8;margin-top:2px}
 /* ── TODAY SCHEDULE ── */
-.appt-mini{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:#111827;border:1px solid #374151;margin-bottom:8px}
-.appt-time-mini{font-size:12px;font-weight:700;color:#0D9488;width:55px;flex-shrink:0}
-.appt-name-mini{font-size:13px;font-weight:600;color:#F9FAFB}
-.appt-type-mini{font-size:11px;color:#9CA3AF}
+.appt-mini{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;background:#F8FAFC;border:1px solid #E2E8F0;margin-bottom:8px;transition:border-color .12s}
+.appt-mini:hover{border-color:#0D9488}
+.appt-time-mini{font-size:12px;font-weight:700;color:#0D9488;width:50px;flex-shrink:0}
+.appt-name-mini{font-size:13px;font-weight:600;color:#0F172A}
+.appt-type-mini{font-size:11px;color:#94A3B8;margin-top:1px}
 /* ── SETTINGS ── */
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.settings-card{background:#1F2937;border:1px solid #374151;border-radius:12px;padding:20px}
-.settings-card-title{font-size:14px;font-weight:600;color:#F9FAFB;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #374151}
+.settings-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.settings-card-title{font-size:14px;font-weight:700;color:#0F172A;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #F1F5F9}
 /* ── CHARTING ── */
 .soap-section{margin-bottom:16px}
-.soap-label{font-size:13px;font-weight:700;color:#0D9488;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.soap-label{font-size:12px;font-weight:700;color:#0D9488;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
 /* ── SPLIT LAYOUT ── */
 .split-layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:18px;font-weight:800;color:#0F172A;letter-spacing:-.4px}
+.section-sub{font-size:13px;color:#64748B;margin-top:2px}
 /* ── UTILS ── */
 .text-teal{color:#0D9488}
-.text-muted{color:#6B7280}
+.text-muted{color:#64748B}
 .text-sm{font-size:12px}
 .mt-2{margin-top:8px}
 .mt-4{margin-top:16px}
@@ -181,6 +213,7 @@ textarea{resize:vertical;min-height:80px}
 .w-full{width:100%}
 .hidden{display:none!important}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+code{font-family:monospace;font-size:12px;background:#F1F5F9;padding:1px 5px;border-radius:4px;color:#0D9488}
 </style>
 </head>
 <body>
@@ -189,18 +222,19 @@ textarea{resize:vertical;min-height:80px}
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">
-      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 36 36" fill="none">
         <ellipse cx="18" cy="14" rx="10" ry="8" stroke="white" stroke-width="2"/>
         <path d="M8 14 Q10 10 12 14 Q14 18 16 14 Q18 10 20 14 Q22 18 24 14 Q26 10 28 14" stroke="white" stroke-width="1.5" fill="none"/>
         <path d="M12 22 Q15 28 18 30 Q21 28 24 22" stroke="white" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </div>
     <h1>NeuroFlow.ai</h1>
-    <p>Genesee Neurology Associates</p>
+    <div class="login-sub">Neurology Practice Platform</div>
+    <div class="login-clinic">Genesee Neurology Associates</div>
     <input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn-primary" onclick="doLogin()">Sign In</button>
-    <div class="login-hint">Default password: <strong>neuro2026</strong></div>
-    <div id="loginErr" style="color:#EF4444;font-size:12px;margin-top:8px;display:none">Incorrect password</div>
+    <div class="login-hint">Default password: neuro2026</div>
+    <div id="loginErr" style="color:#EF4444;font-size:12px;margin-top:8px;display:none">Incorrect password. Please try again.</div>
   </div>
 </div>
 
@@ -218,7 +252,7 @@ textarea{resize:vertical;min-height:80px}
       </div>
       <div>
         <div class="brand-name">NeuroFlow.ai</div>
-        <div class="brand-sub">v1.0</div>
+        <div class="brand-sub">Practice OS</div>
       </div>
     </div>
     <div class="sidebar-clinic">
@@ -226,42 +260,52 @@ textarea{resize:vertical;min-height:80px}
       <div class="sidebar-clinic-doc">Dr. Michael Harmon, MD</div>
     </div>
     <nav id="sideNav">
+      <div class="nav-section">Main</div>
       <div class="nav-item active" onclick="navigate('dashboard')" data-section="dashboard">
-        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
         Dashboard
       </div>
       <div class="nav-item" onclick="navigate('patients')" data-section="patients">
-        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
         Patients
       </div>
+      <div class="nav-section">Clinical</div>
       <div class="nav-item" onclick="navigate('charting')" data-section="charting">
-        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="1" width="12" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1"/><line x1="5" y1="11" x2="9" y2="11" stroke="currentColor" stroke-width="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="9" y2="11"/></svg>
         Charting
       </div>
+      <div class="nav-item" onclick="navigate('diagnostics')" data-section="diagnostics">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8 Q2 4 3 8 Q4 12 5 8 Q6 4 7 8 Q8 12 9 8 Q10 4 11 8 Q12 12 13 8 Q14 4 15 8"/></svg>
+        Diagnostics
+      </div>
+      <div class="nav-section">Operations</div>
       <div class="nav-item" onclick="navigate('scheduling')" data-section="scheduling">
-        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="14" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="1" x2="5" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="1" x2="11" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="12" rx="1"/><line x1="5" y1="1" x2="5" y2="5"/><line x1="11" y1="1" x2="11" y2="5"/><line x1="1" y1="7" x2="15" y2="7"/></svg>
         Scheduling
       </div>
       <div class="nav-item" onclick="navigate('billing')" data-section="billing">
-        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="1"/><line x1="5" y1="9" x2="9" y2="9" stroke="currentColor" stroke-width="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="12" rx="1"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
         Billing
       </div>
       <div class="nav-item" onclick="navigate('messaging')" data-section="messaging">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M14 1H2a1 1 0 00-1 1v9a1 1 0 001 1h3l3 3 3-3h3a1 1 0 001-1V2a1 1 0 00-1-1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 1H2a1 1 0 00-1 1v9a1 1 0 001 1h3l3 3 3-3h3a1 1 0 001-1V2a1 1 0 00-1-1z"/></svg>
         Messaging <span id="msgBadge" class="badge badge-teal" style="margin-left:auto;display:none">0</span>
-      </div>
-      <div class="nav-item" onclick="navigate('diagnostics')" data-section="diagnostics">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 8 Q2 4 3 8 Q4 12 5 8 Q6 4 7 8 Q8 12 9 8 Q10 4 11 8 Q12 12 13 8 Q14 4 15 8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        Diagnostics
-      </div>
-      <div class="nav-item" onclick="navigate('settings')" data-section="settings">
-        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Settings
       </div>
     </nav>
     <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">MH</div>
+        <div>
+          <div class="sidebar-user-name">Dr. Harmon</div>
+          <div class="sidebar-user-role">Neurologist</div>
+        </div>
+      </div>
+      <div class="nav-item" onclick="navigate('settings')" data-section="settings" style="margin-bottom:2px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4" stroke-linecap="round"/></svg>
+        Settings
+      </div>
       <div class="sidebar-logout" onclick="doLogout()">
-        <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke-linecap="round"/></svg>
         Sign Out
       </div>
     </div>
@@ -270,8 +314,20 @@ textarea{resize:vertical;min-height:80px}
   <!-- MAIN -->
   <div id="main">
     <div id="topbar">
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="topbar-actions" id="topbarActions"></div>
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-breadcrumb">NeuroFlow.ai</div>
+          <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        </div>
+      </div>
+      <div class="topbar-search">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M9 9l3 3" stroke-linecap="round"/></svg>
+        <input placeholder="Search patients, notes...">
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-actions" id="topbarActions"></div>
+        <div class="topbar-avatar" title="Dr. Michael Harmon">MH</div>
+      </div>
     </div>
     <div id="content"></div>
   </div>
@@ -593,7 +649,7 @@ function renderPatientDetail(p) {
       <div>
         <div class="card-title">Chart History</div>
         ${notes.length ? notes.map(n => `
-          <div style="padding:10px;background:#111827;border-radius:8px;margin-bottom:8px;border:1px solid #374151;cursor:pointer" onclick="viewNote('${n.id}')">
+          <div style="padding:10px;background:#F8FAFC;border-radius:8px;margin-bottom:8px;border:1px solid #E2E8F0;cursor:pointer" onclick="viewNote('${n.id}')">
             <div style="display:flex;justify-content:space-between">
               <span style="font-weight:600;font-size:13px">${n.type} — ${n.template}</span>
               <span class="text-muted text-sm">${n.date}</span>
@@ -745,7 +801,7 @@ function renderCharting() {
           <div class="card-title">Recent Notes</div>
           ${appData.notes.map(n => {
             const pt = appData.patients.find(p => p.id === n.patientId);
-            return `<div style="padding:10px;background:#111827;border-radius:8px;margin-bottom:8px;border:1px solid #374151;cursor:pointer" onclick="viewNote('${n.id}')">
+            return `<div style="padding:10px;background:#F8FAFC;border-radius:8px;margin-bottom:8px;border:1px solid #E2E8F0;cursor:pointer" onclick="viewNote('${n.id}')">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <span style="font-weight:600;font-size:13px">${pt ? pt.name : 'Unknown'}</span>
                 <span class="text-muted text-sm">${n.date}</span>
@@ -775,7 +831,7 @@ function openAiNoteAssist() {
   const ptId = document.getElementById('chart_pt').value;
   const tpl = document.getElementById('chart_tpl').value;
   openModal('✦ AI Note Assistant', `
-    <div style="margin-bottom:12px;font-size:13px;color:#9CA3AF">Enter brief bullet points about this visit. Claude will generate a complete SOAP note.</div>
+    <div style="margin-bottom:12px;font-size:13px;color:#64748B">Enter brief bullet points about this visit. Claude will generate a complete SOAP note.</div>
     <label>Template: <strong class="text-teal">${tpl}</strong></label>
     <textarea id="ai_bullets" rows="5" style="margin-top:8px" placeholder="• Patient c/o worsening tremor x2 weeks&#10;• Medications stable&#10;• Exam: tremor 3/5, bradykinesia mild&#10;• Plan: adjust levodopa"></textarea>
     <button class="btn btn-teal w-full" style="margin-top:12px" onclick="runAiNote('${ptId}','${tpl}')">Generate SOAP Note</button>
@@ -1057,7 +1113,7 @@ function renderBilling(cptFilter='', diagFilter='') {
                 <td>${c.date}</td>
                 <td>${c.patientName}</td>
                 <td><code style="color:#0D9488">${c.cpt}</code></td>
-                <td><code style="color:#9CA3AF">${c.icd10}</code></td>
+                <td><code>${c.icd10}</code></td>
                 <td>${c.description}</td>
                 <td>$${c.amount}</td>
                 <td>${c.payer}</td>
@@ -1184,7 +1240,7 @@ function renderMessaging() {
               <button class="btn btn-teal btn-sm" onclick="sendMsg('${activeThread.id}')">Send</button>
               <button class="btn btn-ghost btn-sm" onclick="aiReply('${activeThread.id}')">✦ AI</button>
             </div>
-          </div>` : '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#6B7280">No messages</div>'}
+          </div>` : '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94A3B8;font-size:13px">No messages</div>'}
       </div>
     </div>`;
   const msgs = document.getElementById('msgMessages');
@@ -1343,7 +1399,7 @@ function viewDiagDetail(type, id) {
       <div class="form-row"><div><label>Technician</label><div>${study.technician}</div></div></div>`}
     <div class="form-row"><div><label>Indication</label><div>${study.indication}</div></div></div>
     ${type !== 'imaging' ? `<div class="form-row"><div><label>Results</label><div><span class="badge ${study.findings === 'Normal' ? 'badge-green' : 'badge-red'}">${study.findings}</span></div></div></div>` : ''}
-    <div class="form-row"><div><label>Findings / Summary</label><div style="line-height:1.6;font-size:13px;color:#D1D5DB">${type === 'imaging' ? study.findings : study.summary}</div></div></div>
+    <div class="form-row"><div><label>Findings / Summary</label><div style="line-height:1.6;font-size:13px;color:#374151">${type === 'imaging' ? study.findings : study.summary}</div></div></div>
     <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="aiInterpret('${type}','${id}')">✦ AI Interpret</button>
     <div id="ai_diag_box" class="ai-box hidden"><div class="ai-box-title">✦ AI Clinical Interpretation</div><div id="ai_diag_text" class="ai-result"></div></div>`);
 }
@@ -1437,7 +1493,7 @@ function renderSettings() {
           </div>
         </div>
         <button class="btn btn-teal btn-sm" onclick="saveApiKeyFromSettings()">Save Key</button>
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #374151">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9">
           <div class="text-muted text-sm" style="margin-bottom:8px">AI Features</div>
           <div class="badge badge-teal" style="margin:3px">✦ SOAP Note Generation</div>
           <div class="badge badge-teal" style="margin:3px">✦ CPT/ICD-10 Suggestions</div>
@@ -1456,7 +1512,7 @@ function renderSettings() {
         <div class="settings-card-title">Data</div>
         <div class="text-muted text-sm" style="margin-bottom:16px">All data is stored locally in your browser. Export a JSON backup at any time.</div>
         <button class="btn btn-ghost btn-sm" style="margin-bottom:10px" onclick="exportData()">Export Data (JSON)</button>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #374151">
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #F1F5F9">
           <div class="text-muted text-sm" style="margin-bottom:8px">Storage Overview</div>
           <div style="font-size:13px">Patients: <strong>${appData.patients.length}</strong></div>
           <div style="font-size:13px">Appointments: <strong>${appData.appointments.length}</strong></div>
