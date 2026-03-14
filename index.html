@@ -938,9 +938,9 @@ P: [plan section]
 Be clinically accurate, concise, and professional. Use standard neurology terminology.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/anthropic/v1/messages', {
       method:'POST',
-      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json' },
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:800, messages:[{ role:'user', content: prompt }] })
     });
     const data = await resp.json();
@@ -1304,9 +1304,9 @@ async function runAiCodeSuggest(desc) {
 
 Visit: ${desc}`;
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/anthropic/v1/messages', {
       method:'POST',
-      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json' },
       body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:200, messages:[{ role:'user', content: prompt }] })
     });
     const data = await resp.json();
@@ -1443,9 +1443,9 @@ async function aiReply(threadId) {
   const last3 = thread.thread.slice(-3).map(m => `${m.name}: ${m.text}`).join('\n');
   const prompt = `You are Dr. Michael Harmon, a neurologist. Draft a brief, professional patient message reply. Patient condition: ${thread.condition}. Recent messages:\n${last3}\n\nWrite a concise, helpful reply (2-4 sentences):`;
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/anthropic/v1/messages', {
       method:'POST',
-      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json' },
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:200, messages:[{ role:'user', content: prompt }] })
     });
     const data = await resp.json();
@@ -1591,9 +1591,9 @@ async function aiInterpret(type, id) {
   const raw = type === 'imaging' ? study.findings : study.summary;
   const prompt = `You are a neurologist. Provide a brief, clinically useful interpretation of these ${type.toUpperCase()} findings for a patient with ICD-10 ${study.icd10}. Be concise (3-5 sentences). Findings: ${raw}`;
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/anthropic/v1/messages', {
       method:'POST',
-      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json', 'anthropic-dangerous-direct-browser-calls':'true' },
+      headers:{ 'x-api-key': key, 'anthropic-version':'2023-06-01', 'content-type':'application/json' },
       body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:300, messages:[{ role:'user', content: prompt }] })
     });
     const data = await resp.json();
@@ -1839,14 +1839,13 @@ P: [plan — medications, follow-up, referrals, orders, patient instructions]`;
   const timeout = setTimeout(() => controller.abort(), 45000);
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/anthropic/v1/messages', {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'x-api-key': key,
         'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-calls': 'true'
+        'content-type': 'application/json'
       },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
     });
